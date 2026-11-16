@@ -1,0 +1,207 @@
+/* ============================================================================
+   Trend-Continuation — visual flashcard specs.
+   Every card is a DIAGRAM (rendered as inline SVG) plus one short tip.
+   Coordinates: x and y in 0..100, y grows DOWNWARD (screen space).
+   ============================================================================ */
+
+/* A realistic rising zigzag: big swings at BOTH extremes (those are the major levels —
+   the top and bottom of each impulsive move) with small wiggles between them (minor).
+   The y range is kept to 8..78 so the price line never collides with the legend rows. */
+var ZIG_UP   = [[4,78],[13,53],[19,61],[30,27],[38,38],[45,31],[55,50],[64,19],[72,31],[79,23],[88,8],[96,18]];
+var ZIG_DOWN = [[4,22],[13,47],[19,39],[30,73],[38,62],[45,69],[55,50],[64,81],[72,69],[79,77],[88,92],[96,82]];
+var MAJ_IDX  = [0,3,6,7,10];
+var MIN_IDX  = [1,2,4,5,8,9,11];
+function zigDots(){
+  var d = [];
+  MAJ_IDX.forEach(function(i){ d.push({i:i, k:'major'}); });
+  MIN_IDX.forEach(function(i){ d.push({i:i, k:'minor'}); });
+  return d;
+}
+
+var CARDS = [
+/* ------------------------------------------------------------------ STRUCTURE */
+{
+  tag: 'STRUCTURE', title: 'TWO KINDS OF SWING',
+  tip: 'Only the tops and bottoms of IMPULSIVE moves are structure. Ignore everything between.',
+  spec: { kind: 'path', path: ZIG_UP,
+    dots: zigDots(),
+    legend: [['major','MAJOR — tops AND bottoms of impulses'],['minor','MINOR — ignore these']] }
+},
+{
+  tag: 'STRUCTURE', title: 'THE IMPULSIVE MOVE',
+  tip: 'An impulsive move BREAKS previous structure. That break is the whole definition.',
+  spec: { kind: 'path', path: [[6,78],[26,50],[36,62],[70,22],[82,34],[96,16]],
+    broken: 2, hline: {y:50, label:'PRIOR LEVEL', dash:true},
+    dots: [{i:2,k:'major'},{i:3,k:'major'}],
+    note: {x:56, y:44, text:'BREAKS IT'} }
+},
+{
+  tag: 'STRUCTURE', title: 'NOT A BOTTOM YET',
+  tip: 'You cannot call a low “the bottom” until price breaks into NEW HIGHS. It can keep going.',
+  spec: { kind: 'path', path: [[6,40],[24,72],[40,54],[54,80],[70,44],[84,30],[96,18]],
+    hline: {y:44, label:'NEEDS THIS BREAK', dash:true},
+    dots: [{i:2,k:'q',label:'?'},{i:4,k:'q',label:'?'},{i:6,k:'major'}] }
+},
+{
+  tag: 'STRUCTURE', title: 'A REAL PULLBACK',
+  tip: 'At least TWO candles, and actual movement. Two tiny candles is not a pullback.',
+  spec: { kind: 'pullback', good:true }
+},
+{
+  tag: 'STRUCTURE', title: 'TREND INTACT',
+  tip: 'Above the last major swing low = still an uptrend. Chopping does not change that.',
+  spec: { kind: 'path', path: ZIG_UP, hline: {y:50, label:'LAST MAJOR LOW'},
+    dots: [{i:0,k:'major'},{i:6,k:'major'},{i:3,k:'minor'},{i:8,k:'minor'}] }
+},
+{
+  tag: 'STRUCTURE', title: 'TREND OVER',
+  tip: 'A CLOSE below the last major swing low. Not a wick — a close.',
+  spec: { kind: 'path', path: [[6,24],[24,52],[36,38],[52,64],[64,50],[78,86],[90,94],[96,88]],
+    hline: {y:64, label:'LAST MAJOR LOW'},
+    dots: [{i:4,k:'major'},{i:6,k:'break',label:'CLOSE'}],
+    note: {x:80, y:80, text:'POSSIBLE REVERSAL'} }
+},
+{
+  tag: 'STRUCTURE', title: 'DO NOT TRADE THIS',
+  tip: 'Breaks the prior high, holds the prior low → both sides have a case. This is where losses happen.',
+  spec: { kind: 'path', path: [[8,60],[26,30],[40,46],[58,26],[72,44],[86,30],[96,40]],
+    hline: {y:30, label:'PRIOR HIGH'}, hline2: {y:46, label:'PRIOR LOW'},
+    band: {y1:30, y2:46}, note: {x:50, y:52, text:'CONSOLIDATION'} }
+},
+{
+  tag: 'STRUCTURE', title: 'ZONES, NOT LINES',
+  tip: 'Support and resistance are areas. Two levels near each other get combined into one zone.',
+  spec: { kind: 'path', path: [[6,80],[26,54],[40,68],[62,42],[76,58],[96,30]],
+    band: {y1:44, y2:56}, note: {x:50, y:38, text:'ONE ZONE'} }
+},
+{
+  tag: 'STRUCTURE', title: 'UP vs DOWN',
+  tip: 'Higher highs and higher lows = up. Lower highs and lower lows = down. Nothing else needed.',
+  spec: { kind: 'two', a: ZIG_UP, b: ZIG_DOWN, la: 'UPTREND', lb: 'DOWNTREND' }
+},
+
+/* ---------------------------------------------------------------------- RULES */
+{
+  tag: 'RULES', title: 'ONE TIMEFRAME UP',
+  tip: 'Trade one timeframe. Read the trend on the next one up — always exactly one step.',
+  spec: { kind: 'ladder', steps: ['5m','15m','1h','4h','1d'], pairs: [[0,1],[1,2],[2,3],[3,4]] }
+},
+{
+  tag: 'RULES', title: 'RULE 1 — TREND',
+  tip: 'Align with the higher timeframe. Only hunt in the direction it points.',
+  spec: { kind: 'rule', n:'01', label:'HIGHER TIMEFRAME TREND', art:'trend' }
+},
+{
+  tag: 'RULES', title: 'RULE 2 — THE LEVEL',
+  tip: 'The LAST broken major swing level on that higher timeframe becomes your zone.',
+  spec: { kind: 'rule', n:'02', label:'LAST BROKEN LEVEL', art:'level',
+    sub: { kind: 'path', path: [[8,72],[30,34],[44,52],[68,26],[82,40],[96,20]],
+      broken: 30, band: {y1:30, y2:44}, dot: {i:3} } }
+},
+{
+  tag: 'RULES', title: 'RULE 3 — REJECTION',
+  tip: 'Pullback into the zone, then a DOUBLE TOP. Enter on the confirmation candle.',
+  spec: { kind: 'rule', n:'03', label:'REJECTION AT THE ZONE', art:'reject' }
+},
+{
+  tag: 'RULES', title: 'THE CHECKLIST',
+  tip: 'No checklist, no consistency. Three rules, in order, every time.',
+  spec: { kind: 'flow', steps: ['TREND','LEVEL','REJECT'] }
+},
+
+/* ---------------------------------------------------------------------- ENTRY */
+{
+  tag: 'ENTRY', title: 'THE ZONE, EXACTLY',
+  tip: 'Between the highest BODIES and the highest WICK of the prior swing high.',
+  spec: { kind: 'candles', candles: [
+      {x:12,o:78,h:72,l:84,c:80},{x:24,o:52,h:44,l:60,c:48},
+      {x:36,o:60,h:52,l:70,c:66},{x:48,o:44,h:38,l:52,c:40},
+      {x:60,o:40,h:30,l:44,c:34},{x:72,o:38,h:28,l:42,c:36},
+      {x:84,o:36,h:40,l:58,c:54}],
+    band: {y1:30, y2:44}, lab1:'HIGHEST WICK', lab2:'HIGHEST BODIES' }
+},
+{
+  tag: 'ENTRY', title: 'THE FORBIDDEN CLOSE',
+  tip: 'A CLOSE above the zone is continuation, not rejection. Wait — no trade.',
+  spec: { kind: 'candles', bad:true, candles: [
+      {x:12,o:78,h:72,l:84,c:80},{x:26,o:56,h:48,l:62,c:52},
+      {x:40,o:52,h:44,l:58,c:48},{x:54,o:46,h:34,l:50,c:38},
+      {x:68,o:40,h:26,l:44,c:30},{x:82,o:36,h:18,l:40,c:20}],
+    band: {y1:28, y2:44}, note: {x:76, y:12, text:'CLOSE = NO TRADE'} }
+},
+{
+  tag: 'ENTRY', title: 'DOUBLE TOP → SELL',
+  tip: 'Wick into the zone, then a RED candle. Sellers have taken control.',
+  spec: { kind: 'candles', candles: [
+      {x:10,o:76,h:70,l:82,c:78},{x:22,o:52,h:42,l:58,c:46},
+      {x:34,o:60,h:54,l:72,c:70},{x:46,o:44,h:34,l:50,c:38},
+      {x:58,o:40,h:30,l:46,c:42},{x:70,o:36,h:28,l:42,c:40},
+      {x:82,o:42,h:36,l:66,c:62},{x:93,o:64,h:58,l:78,c:76}],
+    band: {y1:30, y2:44}, mark: {x:82, color:'sell', label:'ENTRY'} }
+},
+{
+  tag: 'ENTRY', title: 'DOUBLE BOTTOM → BUY',
+  tip: 'Wick into the zone, then a GREEN candle. Buyers have taken control.',
+  spec: { kind: 'candles', mirror:true, candles: [
+      {x:10,o:26,h:20,l:32,c:24},{x:22,o:50,h:44,l:58,c:54},
+      {x:34,o:42,h:30,l:46,c:34},{x:46,o:58,h:52,l:68,c:64},
+      {x:58,o:60,h:54,l:72,c:58},{x:70,o:62,h:56,l:74,c:60},
+      {x:82,o:58,h:52,l:64,c:54},{x:93,o:52,h:40,l:58,c:42}],
+    band: {y1:56, y2:70}, mark: {x:82, color:'buy', label:'ENTRY'} }
+},
+{
+  tag: 'ENTRY', title: 'ENTRY PRICE',
+  tip: 'The CLOSE of the rejection candle. Equivalently the OPEN of the next one.',
+  spec: { kind: 'candles', candles: [
+      {x:14,o:74,h:68,l:80,c:76},{x:30,o:52,h:44,l:58,c:48},
+      {x:46,o:56,h:48,l:64,c:60},{x:62,o:44,h:36,l:50,c:40},
+      {x:78,o:42,h:32,l:50,c:46},{x:92,o:48,h:42,l:72,c:68}],
+    band: {y1:32, y2:46}, mark: {x:78, color:'sell', label:'ENTER HERE'} }
+},
+
+/* ----------------------------------------------------------------------- RISK */
+{
+  tag: 'RISK', title: 'STOP + ATR',
+  tip: 'Beyond the swing extreme, then one ATR further — so the stop scales with volatility.',
+  spec: { kind: 'stop' }
+},
+{
+  tag: 'RISK', title: 'TARGET',
+  tip: 'The PREVIOUS major swing level. If two sit close, take the more realistic one.',
+  spec: { kind: 'path', path: [[6,84],[26,52],[38,70],[58,44],[70,60],[86,26],[96,34]],
+    hline: {y:26, label:'TARGET'}, dot: {i:5, k:'major'},
+    note: {x:22, y:40, text:'PREVIOUS LEVEL'} }
+},
+{
+  tag: 'RISK', title: 'TWO TO ONE',
+  tip: 'Risk one to make two. Anything less and the win rate has to do all the work.',
+  spec: { kind: 'rr' }
+},
+{
+  tag: 'RISK', title: 'WHY 50% STILL WINS',
+  tip: 'Five wins at +2R, five losses at −1R. Fifty percent is a positive edge at 2:1.',
+  spec: { kind: 'edge' }
+},
+{
+  tag: 'RISK', title: 'TWO JOBS',
+  tip: 'Keep you solvent. Keep you unemotional. Both come from the loss being small.',
+  spec: { kind: 'rule2', a:{n:'01',label:'KEEP THE ACCOUNT',art:'shield'}, b:{n:'02',label:'KEEP YOU CALM',art:'calm'} }
+},
+
+/* -------------------------------------------------------------------- MINDSET */
+{
+  tag: 'MINDSET', title: 'THE TRIANGLE',
+  tip: 'All three sides or none of it works. Strategy is only one of them.',
+  spec: { kind: 'triangle', sides: ['STRATEGY','RISK','PSYCHOLOGY'] }
+},
+{
+  tag: 'MINDSET', title: 'THE THREE KILLERS',
+  tip: 'FOMO, revenge trading, and strategy-hopping. All emotional. All fatal to the edge.',
+  spec: { kind: 'killers', items: ['FOMO','REVENGE','SWITCHING'] }
+},
+{
+  tag: 'MINDSET', title: 'WHY RULES',
+  tip: 'A checklist beside the desk. Rules ticked off → enter. That is what consistency is.',
+  spec: { kind: 'checklist', items: ['HIGHER TF TREND','LAST BROKEN LEVEL','REJECTION','STOP BEYOND + ATR','TARGET PREV LEVEL','2:1 OR SKIP'] }
+}
+];
