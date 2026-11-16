@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trend-Continuation Strategy — Flashcards</title>
+<style>
+  :root{
+    --bg:#f7f7f5; --card:#ffffff; --ink:#17181a; --muted:#6b7280; --line:#e4e4e2;
+    --accent:#1f6feb; --ok:#0f7b3f; --okbg:#eaf6ee; --no:#b42318; --nobg:#fdeceb;
+    --shadow:0 1px 2px rgba(16,24,40,.06), 0 8px 24px rgba(16,24,40,.06);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  header{
+    position:sticky; top:0; z-index:5; background:rgba(247,247,245,.92);
+    backdrop-filter:saturate(180%) blur(8px); border-bottom:1px solid var(--line);
+  }
+  .bar{
+    max-width:860px; margin:0 auto; padding:12px 20px;
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  }
+  .brand{font-weight:650; letter-spacing:-.01em; font-size:15px; white-space:nowrap}
+  .brand span{color:var(--muted); font-weight:400}
+  .spacer{flex:1}
+  .meter{font-variant-numeric:tabular-nums; color:var(--muted); font-size:13px}
+  button{
+    font:inherit; font-size:13px; font-weight:550; color:var(--ink);
+    background:var(--card); border:1px solid var(--line); border-radius:8px;
+    padding:6px 11px; cursor:pointer; transition:background .12s, border-color .12s;
+  }
+  button:hover{background:#f2f2f0; border-color:#d6d6d3}
+  button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  button.on{background:var(--ink); color:#fff; border-color:var(--ink)}
+  .chips{display:flex; gap:6px; flex-wrap:wrap}
+  main{max-width:860px; margin:0 auto; padding:26px 20px 80px}
+  .stage{perspective:1600px}
+  .card{
+    position:relative; background:var(--card); border:1px solid var(--line);
+    border-radius:14px; box-shadow:var(--shadow); min-height:400px;
+    display:flex; flex-direction:column; cursor:pointer;
+  }
+  .cardtop{
+    display:flex; align-items:center; gap:10px;
+    padding:14px 20px; border-bottom:1px solid var(--line);
+  }
+  .tag{
+    font-size:11px; font-weight:650; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--muted); border:1px solid var(--line); border-radius:999px; padding:3px 9px;
+  }
+  .n{margin-left:auto; font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums}
+  .face{padding:34px 30px 30px; flex:1; display:flex; flex-direction:column}
+  .q{font-size:23px; line-height:1.35; font-weight:620; letter-spacing:-.015em}
+  .ask{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; font-weight:600; margin-bottom:14px}
+  .a{font-size:17px; line-height:1.66; margin:0}
+  .a b{font-weight:650}
+  .a em{font-style:normal; background:#fff8e6; padding:0 3px; border-radius:3px}
+  .rule{height:1px; background:var(--line); margin:22px 0}
+  .flipnote{color:var(--muted); font-size:12.5px; margin-top:auto; padding-top:18px}
+  .act{display:flex; gap:10px; margin-top:16px; flex-wrap:wrap}
+  .act button{flex:1; min-width:150px; padding:11px 14px; font-size:14px}
+  .got{color:var(--ok); border-color:#bfe3cc; background:var(--okbg)}
+  .got:hover{background:#e0f0e6}
+  .miss{color:var(--no); border-color:#f2c9c5; background:var(--nobg)}
+  .miss:hover{background:#fbe0dd}
+  .nav{display:flex; gap:10px; margin-top:18px}
+  .nav button{flex:1; padding:10px}
+  .hint{color:var(--muted); font-size:12.5px; margin-top:22px; text-align:center; line-height:1.9}
+  kbd{
+    font:inherit; font-size:11.5px; background:var(--card); border:1px solid var(--line);
+    border-bottom-width:2px; border-radius:5px; padding:1px 6px; color:var(--ink);
+  }
+  .done{display:none; text-align:center; padding:56px 24px}
+  .done h2{margin:0 0 8px; font-size:24px; letter-spacing:-.02em}
+  .done p{color:var(--muted); margin:0 0 22px}
+  footer{max-width:860px; margin:0 auto; padding:0 20px 60px; color:var(--muted); font-size:12.5px}
+  footer a{color:var(--muted)}
+  @media (max-width:560px){
+    .q{font-size:20px} .face{padding:26px 20px} .card{min-height:360px}
+    .brand{font-size:14px} .brand span{display:none}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="brand">Trend-Continuation Strategy <span>· flashcards</span></div>
+    <div class="spacer"></div>
+    <div class="meter" id="meter">0 / 0</div>
+    <button id="shuffleBtn" title="Shuffle the deck">Shuffle</button>
+    <button id="resetBtn" title="Clear progress">Reset</button>
+  </div>
+  <div class="bar" style="padding-top:0">
+    <div class="chips" id="chips"></div>
+  </div>
+</header>
+
+<main>
+  <div class="stage" id="stage">
+    <div class="card" id="card" tabindex="0" role="button" aria-live="polite">
+      <div class="cardtop">
+        <div class="tag" id="tag">—</div>
+        <div class="n" id="pos"></div>
+      </div>
+      <div class="face" id="face"></div>
+    </div>
+    <div class="act" id="act" style="display:none">
+      <button class="got" id="gotBtn">Got it &nbsp;<kbd>G</kbd></button>
+      <button class="miss" id="missBtn">Review again &nbsp;<kbd>R</kbd></button>
+    </div>
+    <div class="nav">
+      <button id="prevBtn">← Previous &nbsp;<kbd>←</kbd></button>
+      <button id="nextBtn">Next → &nbsp;<kbd>→</kbd></button>
+    </div>
+    <div class="done" id="done">
+      <h2>Deck complete</h2>
+      <p id="doneStats"></p>
+      <button id="againBtn">Study the missed cards</button>
+    </div>
+    <div class="hint">
+      <kbd>space</kbd> flip · <kbd>←</kbd> <kbd>→</kbd> move · <kbd>G</kbd> got it · <kbd>R</kbd> review · <kbd>S</kbd> shuffle
+    </div>
+  </div>
+</main>
+
+<footer>
+  Source: <em>The Only Day Trading Strategy You Will Ever Need (Full Tutorial: Beginner To Advanced)</em> — The Trading Channel.
+  Cards are a study aid summarising that video; nothing here is trading advice.
+</footer>
+
+<script>
+var CARDS = [{"t": "Trend", "q": "What is a MAJOR swing level?", "a": "The top and the bottom of an IMPULSIVE move. An impulsive move is one that BREAKS previous structure. Minor swing levels are everything in between — and in a trending market you ignore them entirely."}, {"t": "Trend", "q": "When can you confirm a pullback low is a major swing level?", "a": "Only AFTER price breaks into new highs. Until then the pullback could keep going — you cannot know it was the bottom until a new high confirms it."}, {"t": "Trend", "q": "In an uptrend, what single rule tells you the trend is still intact?", "a": "Price stays ABOVE the most recent major swing low. No matter what happens in between (choppiness, consolidation), above that level = still an uptrend. This is why you draw horizontal lines at your major swing lows in an uptrend."}, {"t": "Trend", "q": "What is the FIRST hint that an uptrend may be ending?", "a": "A break and CLOSE below the most recent major swing low. It's a 'possible reversal' — you stop looking for long trades from that point."}, {"t": "Trend", "q": "What does the video call a 'one-two-three reversal move'?", "a": "The sequence that flips structure: the prior major swing level breaks, then price fails to reclaim it, then the next level breaks. Once the major support breaks after that, it is a downtrend — not a pullback."}, {"t": "Trend", "q": "How do you spot CONSOLIDATION, and what do you do about it?", "a": "You get a push to a major swing level, then a break and close back ABOVE the previous pullback high — while the prior low stays intact. Both sides now have a case = indecision. DO NOT TRADE. The video: 'this is when all of our losses occur.' Waits until one boundary level breaks."}, {"t": "Trend", "q": "Are support and resistance lines or zones?", "a": "ZONES. The video treats them as areas, not exact lines — e.g. combining two major swing levels that sit close together and splitting the difference between them."}, {"t": "Trend", "q": "How does the video define a pullback (its most objective rule)?", "a": "At least TWO candles, and real movement — not two tiny candles before a breakout. The author admits there is no fully objective rule for this; it comes with screen time."}, {"t": "Trend", "q": "At the very start, why do most day traders fail?", "a": "Two reasons: (1) no strategy they can stay consistent to, so they switch constantly or trade randomly; (2) they HAVE a strategy but it loses money, and they keep trading it until they're too frustrated to continue."}, {"t": "Trend", "q": "Does this strategy only work for forex or only for day trading?", "a": "No. The author uses it across ALL time frames and in the STOCK, FOREX and CRYPTO markets he trades."}, {"t": "Rules", "q": "RULE 1 of the strategy — what is it?", "a": "HIGHER TIME FRAME TREND. Align yourself with the trend of one time frame UP from the one you trade. Only take trades in that direction."}, {"t": "Rules", "q": "RULE 2 — what level do you use, and from which time frame?", "a": "The LAST MAJOR SWING LEVEL that was broken, taken from the higher time frame. Once a major swing level breaks, that is the level you watch for trend continuation."}, {"t": "Rules", "q": "RULE 3 — what is the entry trigger?", "a": "REJECTION at the zone, on the trading time frame. Bearish setup = DOUBLE TOP; bullish setup = DOUBLE BOTTOM."}, {"t": "Rules", "q": "Give the exact time-frame pairing ladder.", "a": "5 min → check the 15 min. 15 min → the 1 hour. 1 hour → the 4 hour. 4 hour → the daily. Always exactly ONE time frame up; the author rarely goes higher than the daily."}, {"t": "Rules", "q": "Why does the strategy insist on the higher time frame at all?", "a": "To be on the correct SIDE of the market. The higher time frame tells you whether to be hunting longs or shorts. Rule 1 exists so rule 3's double top / double bottom lands in the direction of the bigger trend."}, {"t": "Entry", "q": "Define the ZONE for a bearish (double top) entry, precisely.", "a": "Between the HIGHEST BODIES of the previous swing high and the HIGHEST WICK of that same swing high. Wicks may touch it; bodies may close in it."}, {"t": "Entry", "q": "What is the ONE thing that must NOT happen inside the zone?", "a": "A CLOSE above the zone. A close above is continuation, not rejection — that's exactly what price had been doing before. Rejection requires price to be turned away."}, {"t": "Entry", "q": "After price touches the zone, what confirms the entry?", "a": "For a short: a RED candle showing sellers taking control. For a long: a GREEN candle showing buying pressure out of the zone."}, {"t": "Entry", "q": "What is the exact entry price?", "a": "The CLOSE of the rejection candle — equivalently, the OPEN of the next candle."}, {"t": "Entry", "q": "In the bullish recap on MSFT, what confirmed the double bottom?", "a": "Price pushed down, formed a bottom, formed a neckline, then RETESTED that area WITHOUT closing below it. That gave buying pressure — then a green candle, followed by an even bigger green candle, which is where the entry is taken."}, {"t": "Entry", "q": "What happens if price closes back above your zone before entry?", "a": "You are NOT interested in going short yet. The video shows exactly this: price broke through the high making a higher high, so no trade — the author waited for a push back into the level that then actually rejected."}, {"t": "Risk", "q": "Where does the STOP LOSS go?", "a": "BEYOND the extreme of the rejection: below the lowest low of the double bottom / rejection (for longs), or above the highest high (for shorts)."}, {"t": "Risk", "q": "What extra buffer is added to the stop, and why?", "a": "The ATR (Average True Range). The author uses ATR(14) — the average movement of the last 14 candles — and places the stop that far beyond the swing low, to stay aligned with current market VOLATILITY."}, {"t": "Risk", "q": "Give the worked stop-loss example from the video.", "a": "MSFT long: swing low at 185.20, ATR 2.31 → stop placed 2.31 below the low, around 182.89."}, {"t": "Risk", "q": "Where is the TARGET?", "a": "Back at the PREVIOUS major swing level (previous resistance for longs, previous support for shorts). If there are two close together, pick the one further away / the sensible one — the video picks the slightly lower of two resistance levels so the target isn't over-ambitious."}, {"t": "Risk", "q": "What reward-to-risk ratio does the strategy target?", "a": "About 2:1. The demonstrated trades came out at 2.4:1 (AUD/CAD) and 2.3:1 (Litecoin)."}, {"t": "Risk", "q": "What is the strategy's win rate, and why does it still make money?", "a": "'A little bit less than 50%' / 'somewhere around 50%.' With a 2:1 reward:risk, ~50% is a POSITIVE EXPECTANCY — the edge only shows up over a large sample size."}, {"t": "Risk", "q": "Why is a risk management plan necessary if the strategy already has an edge?", "a": "Because a ~50% win rate means the next trade is close to a coin flip. If you risk your whole account on one trade you're gambling, not trading. Risk management keeps you 'chips and a chair at the poker table' long enough for the edge to play out."}, {"t": "Risk", "q": "What are the TWO jobs of the risk management plan?", "a": "(1) Stop you from blowing the account — it cuts that chance dramatically. (2) Keep you OUT OF YOUR EMOTIONS — fear and greed can't control decisions if the per-trade loss is small enough to handle comfortably."}, {"t": "Mindset", "q": "Name the 'Triangle of Trading Success' — the three required skills.", "a": "1) A STRATEGY you can stay consistent to that makes money over time. 2) A RISK MANAGEMENT PLAN that keeps you out of your emotions and keeps you from blowing the account. 3) TRADING PSYCHOLOGY / discipline."}, {"t": "Mindset", "q": "What does trading psychology actually protect you from?", "a": "FOMO — buying because you missed a move; switching strategies; and REVENGE trading — going super aggressive right after a stop-out to win the money back. All are emotional mistakes that destroy the edge."}, {"t": "Mindset", "q": "Why does making the per-trade loss SMALL matter emotionally?", "a": "You WILL have losing trades — the author does too. The point is for losses not to affect you emotionally, because emotional decisions wreck your statistical advantage and the whole money-making strategy with it."}, {"t": "Mindset", "q": "What is the stated purpose of a rules-based strategy?", "a": "Consistency. A checklist beside your desk: once all the rules are ticked off, you enter. The video: 'a strategy that's rules based so you can stay consistent to it and it's proven to make money over time.'"}, {"t": "Practice", "q": "Walk through the FULL pre-trade checklist in order.", "a": "1) Identify the higher-time-frame trend (one TF up). 2) Find the LAST broken major swing level on that higher time frame — mark it as a ZONE. 3) Drop to the trading time frame. 4) Wait for price to pull back into the zone. 5) Look for a double top (short) / double bottom (long) with no close beyond the zone. 6) Wait for the red/green confirmation candle. 7) Enter at its close. 8) Stop = beyond the swing extreme ± ATR. 9) Target = previous major swing level. 10) Target ≈ 2:1."}, {"t": "Practice", "q": "What does the strategy say to do while price is chopping between two levels?", "a": "Nothing. Everything between the two boundary levels is consolidation and minor swing levels only. Do not trade until one level breaks and shows you the direction."}, {"t": "Practice", "q": "Recap the AUD/CAD trade from the video.", "a": "5-minute chart, bearish TREND CONTINUATION. Price pulled back to the previously broken major swing level, showed rejection, and ran down to target. ~2.4:1 R:R, a couple of thousand dollars, in roughly one to two hours."}, {"t": "Practice", "q": "Recap the MSFT example used for the full recap.", "a": "4-hour chart gives the trend and the last broken major swing level. Drop to the 1-hour to trade. Double bottom: push down, bottom, neckline, retest without closing below, green candle then a bigger green candle = entry. Stop below the low minus ATR(14) 2.31. Target the previous major swing high."}, {"t": "Practice", "q": "On the MSFT recap, which time frame is the TREND read on and which is TRADED?", "a": "Trend read on the 4-hour; traded on the 1-hour. The rule is always one time frame up from the trading chart."}, {"t": "Practice", "q": "Is this strategy limited to the examples shown (forex pairs, Litecoin, MSFT)?", "a": "No — the author explicitly states it works across all markets (stock, forex, crypto) and all time frames, and frames it as his favourite after 10 years of trading."}, {"t": "Practice", "q": "What does the video say about making this completely objective?", "a": "It can't be, and the author says so openly several times — particularly for identifying pullbacks and drawing major swing levels. That part is judgment honed by screen time, which is why the trend-identification lesson takes up most of the video."}];
+
+/* ---------------------------------------------------------------- state */
+var P = { order: [], i: 0, flipped: false, got: {}, filter: 'All' };
+var KEY = 'tc-flash-v1';
+try { var s = JSON.parse(localStorage.getItem(KEY) || '{}'); if (s && s.got) P.got = s.got; } catch (e) {}
+function save(){ try { localStorage.setItem(KEY, JSON.stringify({ got: P.got })); } catch (e) {} }
+
+var TOPICS = ['All'];
+CARDS.forEach(function (c) { if (TOPICS.indexOf(c.t) < 0) TOPICS.push(c.t); });
+
+function deck(){
+  return CARDS.map(function (c, n) { return n; })
+              .filter(function (n) { return P.filter === 'All' || CARDS[n].t === P.filter; });
+}
+function reshuffle(){
+  P.order = deck();
+  for (var i = P.order.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = P.order[i]; P.order[i] = P.order[j]; P.order[j] = t;
+  }
+  P.i = 0; P.flipped = false; render();
+}
+function ordered(){ P.order = deck(); P.i = 0; P.flipped = false; render(); }
+
+/* ---------------------------------------------------------------- render */
+function esc(x){
+  return String(x).replace(/[&<>"]/g, function (m) {
+    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[m];
+  });
+}
+/* Minimal formatting so the answer reads well: **bold**, *emphasis*, and ``` blocks. */
+function fmt(x){
+  var out = esc(x);
+  out = out.replace(/```([\s\S]*?)```/g, '<code style="display:block;background:#f4f4f2;border:1px solid #e4e4e2;border-radius:6px;padding:10px 12px;margin:10px 0;font-size:13.5px;white-space:pre-wrap">$1</code>');
+  out = out.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+  out = out.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  return out.replace(/\n/g, '<br>');
+}
+function render(){
+  var t = document.getElementById('tag'), pos = document.getElementById('pos');
+  var face = document.getElementById('face'), act = document.getElementById('act');
+  var doneEl = document.getElementById('done'), stage = document.getElementById('stage');
+  var cardEl = document.getElementById('card'), navEl = document.querySelector('.nav');
+  var hintEl = document.querySelector('.hint');
+
+  var total = P.order.length;
+  var gotN = Object.keys(P.got).length;
+
+  document.getElementById('meter').textContent =
+    (total ? (P.i + 1) : 0) + ' / ' + total + '   ·   ' + gotN + ' marked';
+
+  if (!total){ t.textContent = '—'; pos.textContent = ''; face.innerHTML = '<p class="a">No cards in this topic.</p>';
+    act.style.display = 'none'; return; }
+
+  var c = CARDS[P.order[P.i]];
+  t.textContent = c.t;
+  pos.textContent = 'card ' + (P.i + 1) + ' of ' + total + (P.got[P.order[P.i]] ? '  ·  marked' : '');
+
+  if (!P.flipped){
+    face.innerHTML = '<div class="ask">Question</div><div class="q">' + fmt(c.q) + '</div>' +
+      '<div class="flipnote">Click the card, or press space, to reveal.</div>';
+    act.style.display = 'none';
+    cardEl.setAttribute('aria-label', 'Question: ' + c.q);
+  } else {
+    face.innerHTML = '<div class="ask">Answer</div><div class="q" style="font-size:17px;font-weight:600;margin-bottom:14px">' +
+      fmt(c.q) + '</div><div class="rule"></div><p class="a">' + fmt(c.a) + '</p>';
+    act.style.display = 'flex';
+    cardEl.setAttribute('aria-label', 'Answer: ' + c.a);
+  }
+  doneEl.style.display = 'none'; stage.style.display = 'block';
+  navEl.style.display = P.flipped ? 'none' : 'flex';
+  hintEl.style.display = 'block';
+}
+function next(){ if (P.i < P.order.length - 1){ P.i++; P.flipped = false; render(); } else finish(); }
+function prev(){ if (P.i > 0){ P.i--; P.flipped = false; render(); } }
+function flip(){ P.flipped = !P.flipped; render(); }
+function grade(ok){
+  var key = P.order[P.i];
+  if (ok) P.got[key] = 1; else delete P.got[key];
+  save();
+  if (P.i < P.order.length - 1) { P.i++; P.flipped = false; render(); } else finish();
+}
+function finish(){
+  var stage = document.getElementById('stage'), doneEl = document.getElementById('done');
+  var total = P.order.length;
+  var missed = P.order.filter(function (n) { return !P.got[n]; });
+  document.querySelector('.nav').style.display = 'none';
+  document.querySelector('.hint').style.display = 'none';
+  document.getElementById('card').style.display = 'none';
+  document.getElementById('act').style.display = 'none';
+  stage.style.display = 'block'; doneEl.style.display = 'block';
+  document.getElementById('doneStats').textContent =
+    (total - missed.length) + ' of ' + total + ' marked as known' +
+    (missed.length ? ' · ' + missed.length + ' to review.' : ' · nothing left to review.');
+  document.getElementById('againBtn').style.display = missed.length ? 'inline-block' : 'none';
+}
+
+/* ---------------------------------------------------------------- wiring */
+document.getElementById('card').addEventListener('click', flip);
+document.getElementById('nextBtn').addEventListener('click', next);
+document.getElementById('prevBtn').addEventListener('click', prev);
+document.getElementById('gotBtn').addEventListener('click', function (e) { e.stopPropagation(); grade(true); });
+document.getElementById('missBtn').addEventListener('click', function (e) { e.stopPropagation(); grade(false); });
+document.getElementById('shuffleBtn').addEventListener('click', reshuffle);
+document.getElementById('resetBtn').addEventListener('click', function () {
+  P.got = {}; save(); showCard(); render();
+});
+document.getElementById('againBtn').addEventListener('click', function () {
+  var missed = P.order.filter(function (n) { return !P.got[n]; });
+  P.order = missed; P.i = 0; P.flipped = false; showCard(); render();
+});
+
+function showCard(){
+  document.getElementById('card').style.display = '';
+  document.querySelector('.nav').style.display = 'flex';
+  document.querySelector('.hint').style.display = 'block';
+  document.getElementById('done').style.display = 'none';
+}
+
+/* topic chips */
+(function () {
+  var wrap = document.getElementById('chips');
+  TOPICS.forEach(function (tp) {
+    var b = document.createElement('button');
+    b.textContent = tp;
+    b.className = tp === 'All' ? 'on' : '';
+    b.addEventListener('click', function () {
+      P.filter = tp;
+      [].forEach.call(wrap.children, function (x) { x.className = ''; });
+      b.className = 'on';
+      showCard(); ordered();
+    });
+    wrap.appendChild(b);
+  });
+})();
+
+document.addEventListener('keydown', function (e) {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  var k = e.key;
+  if (k === ' ' || k === 'Enter') { e.preventDefault(); flip(); }
+  else if (k === 'ArrowRight') { e.preventDefault(); next(); }
+  else if (k === 'ArrowLeft') { e.preventDefault(); prev(); }
+  else if (k === 'g' || k === 'G') { if (P.flipped) grade(true); }
+  else if (k === 'r' || k === 'R') { if (P.flipped) grade(false); }
+  else if (k === 's' || k === 'S') { reshuffle(); }
+});
+
+ordered();
+</script>
+</body>
+</html>

@@ -3,283 +3,519 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Trend-Continuation Strategy — Flashcards</title>
+<title>Trend Continuation — Visual Cards</title>
 <style>
   :root{
-    --bg:#f7f7f5; --card:#ffffff; --ink:#17181a; --muted:#6b7280; --line:#e4e4e2;
-    --accent:#1f6feb; --ok:#0f7b3f; --okbg:#eaf6ee; --no:#b42318; --nobg:#fdeceb;
-    --shadow:0 1px 2px rgba(16,24,40,.06), 0 8px 24px rgba(16,24,40,.06);
+    --bg:#0a0a0b; --panel:#101012; --ink:#ffffff; --dim:#7d7d85; --faint:#2a2a2f;
+    --volt:#d8ff3e; --sell:#ff4b3e; --buy:#d8ff3e; --zone:rgba(255,255,255,.10);
+    --rule:rgba(255,255,255,.10);
   }
   *{box-sizing:border-box}
-  html,body{margin:0;padding:0}
+  html,body{margin:0;padding:0;background:var(--bg);}
   body{
-    background:var(--bg); color:var(--ink);
-    font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
-    -webkit-font-smoothing:antialiased;
+    color:var(--ink); min-height:100vh;
+    font-family:"Helvetica Neue",Helvetica,Inter,-apple-system,"Segoe UI",Arial,sans-serif;
+    -webkit-font-smoothing:antialiased; overflow-x:hidden;
   }
-  header{
-    position:sticky; top:0; z-index:5; background:rgba(247,247,245,.92);
-    backdrop-filter:saturate(180%) blur(8px); border-bottom:1px solid var(--line);
+  /* ---------------------------------------------------------------- header */
+  header{position:sticky;top:0;z-index:20;background:rgba(10,10,11,.86);
+    backdrop-filter:saturate(160%) blur(10px); border-bottom:1px solid var(--rule);}
+  .wrap{max-width:1020px;margin:0 auto;padding:0 22px}
+  .bar{display:flex;align-items:center;gap:16px;padding:14px 0;flex-wrap:wrap}
+  .mark{
+    font-weight:800;font-size:13px;letter-spacing:.24em;text-transform:uppercase;white-space:nowrap;
   }
-  .bar{
-    max-width:860px; margin:0 auto; padding:12px 20px;
-    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
-  }
-  .brand{font-weight:650; letter-spacing:-.01em; font-size:15px; white-space:nowrap}
-  .brand span{color:var(--muted); font-weight:400}
+  .mark i{font-style:normal;color:var(--volt)}
   .spacer{flex:1}
-  .meter{font-variant-numeric:tabular-nums; color:var(--muted); font-size:13px}
+  .count{font-size:12px;letter-spacing:.14em;color:var(--dim);font-variant-numeric:tabular-nums;
+    text-transform:uppercase;white-space:nowrap}
+  .rail{height:2px;background:var(--faint);position:relative;margin-bottom:0}
+  .rail>b{position:absolute;left:0;top:0;bottom:0;background:var(--volt);transition:width .25s ease}
   button{
-    font:inherit; font-size:13px; font-weight:550; color:var(--ink);
-    background:var(--card); border:1px solid var(--line); border-radius:8px;
-    padding:6px 11px; cursor:pointer; transition:background .12s, border-color .12s;
+    font:inherit;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink);background:transparent;border:1px solid rgba(255,255,255,.22);
+    border-radius:999px;padding:8px 15px;cursor:pointer;transition:background .14s,border-color .14s,color .14s;
   }
-  button:hover{background:#f2f2f0; border-color:#d6d6d3}
-  button:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
-  button.on{background:var(--ink); color:#fff; border-color:var(--ink)}
-  .chips{display:flex; gap:6px; flex-wrap:wrap}
-  main{max-width:860px; margin:0 auto; padding:26px 20px 80px}
-  .stage{perspective:1600px}
-  .card{
-    position:relative; background:var(--card); border:1px solid var(--line);
-    border-radius:14px; box-shadow:var(--shadow); min-height:400px;
-    display:flex; flex-direction:column; cursor:pointer;
+  button:hover{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.4)}
+  button:focus-visible{outline:2px solid var(--volt);outline-offset:3px}
+  button.on{background:var(--volt);color:#0a0a0b;border-color:var(--volt)}
+  .chips{display:flex;gap:7px;flex-wrap:wrap;padding-bottom:14px}
+  .chips button{font-size:10px;padding:6px 12px;letter-spacing:.16em;color:var(--dim)}
+  .chips button.on{color:#0a0a0b}
+  /* ------------------------------------------------------------------ card */
+  main{max-width:1020px;margin:0 auto;padding:38px 22px 90px}
+  .card{border:1px solid var(--rule);background:var(--panel);border-radius:2px;
+    display:flex;flex-direction:column;overflow:hidden;position:relative}
+  .card.flip{animation:pop .3s ease}
+  @keyframes pop{from{opacity:.25;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .head{display:flex;align-items:baseline;gap:14px;padding:22px 26px 0}
+  .tag{font-size:10px;font-weight:800;letter-spacing:.26em;text-transform:uppercase;color:var(--volt)}
+  .idx{margin-left:auto;font-size:10px;letter-spacing:.2em;color:var(--dim);font-variant-numeric:tabular-nums}
+  h1{
+    margin:10px 26px 4px; font-size:clamp(30px,6.2vw,64px); line-height:.92;
+    font-weight:800; letter-spacing:-.035em; text-transform:uppercase;
   }
-  .cardtop{
-    display:flex; align-items:center; gap:10px;
-    padding:14px 20px; border-bottom:1px solid var(--line);
+  .art{padding:16px 12px 6px}
+  svg{display:block;width:100%;height:auto}
+  .tip{
+    border-top:1px solid var(--rule); margin-top:6px; padding:20px 26px 26px;
+    display:flex; gap:16px; align-items:flex-start;
   }
-  .tag{
-    font-size:11px; font-weight:650; letter-spacing:.06em; text-transform:uppercase;
-    color:var(--muted); border:1px solid var(--line); border-radius:999px; padding:3px 9px;
-  }
-  .n{margin-left:auto; font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums}
-  .face{padding:34px 30px 30px; flex:1; display:flex; flex-direction:column}
-  .q{font-size:23px; line-height:1.35; font-weight:620; letter-spacing:-.015em}
-  .ask{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; font-weight:600; margin-bottom:14px}
-  .a{font-size:17px; line-height:1.66; margin:0}
-  .a b{font-weight:650}
-  .a em{font-style:normal; background:#fff8e6; padding:0 3px; border-radius:3px}
-  .rule{height:1px; background:var(--line); margin:22px 0}
-  .flipnote{color:var(--muted); font-size:12.5px; margin-top:auto; padding-top:18px}
-  .act{display:flex; gap:10px; margin-top:16px; flex-wrap:wrap}
-  .act button{flex:1; min-width:150px; padding:11px 14px; font-size:14px}
-  .got{color:var(--ok); border-color:#bfe3cc; background:var(--okbg)}
-  .got:hover{background:#e0f0e6}
-  .miss{color:var(--no); border-color:#f2c9c5; background:var(--nobg)}
-  .miss:hover{background:#fbe0dd}
-  .nav{display:flex; gap:10px; margin-top:18px}
-  .nav button{flex:1; padding:10px}
-  .hint{color:var(--muted); font-size:12.5px; margin-top:22px; text-align:center; line-height:1.9}
-  kbd{
-    font:inherit; font-size:11.5px; background:var(--card); border:1px solid var(--line);
-    border-bottom-width:2px; border-radius:5px; padding:1px 6px; color:var(--ink);
-  }
-  .done{display:none; text-align:center; padding:56px 24px}
-  .done h2{margin:0 0 8px; font-size:24px; letter-spacing:-.02em}
-  .done p{color:var(--muted); margin:0 0 22px}
-  footer{max-width:860px; margin:0 auto; padding:0 20px 60px; color:var(--muted); font-size:12.5px}
-  footer a{color:var(--muted)}
+  .tip .fl{flex:0 0 auto;font-size:10px;font-weight:800;letter-spacing:.24em;color:var(--dim);padding-top:3px}
+  .tip p{margin:0;font-size:clamp(15px,2.1vw,20px);line-height:1.42;font-weight:500;letter-spacing:-.01em;max-width:60ch}
+  /* ---------------------------------------------------------------- actions */
+  .act{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+  .act button{flex:1;min-width:170px;padding:14px;font-size:12px;border-radius:2px}
+  .got{border-color:rgba(216,255,62,.5);color:var(--volt)}
+  .got:hover{background:rgba(216,255,62,.12)}
+  .miss{border-color:rgba(255,75,62,.45);color:var(--sell)}
+  .miss:hover{background:rgba(255,75,62,.12)}
+  .nav{display:flex;gap:10px;margin-top:12px}
+  .nav button{flex:1;padding:13px;border-radius:2px;color:var(--dim)}
+  .nav button:hover{color:var(--ink)}
+  .hint{margin-top:30px;text-align:center;font-size:10.5px;letter-spacing:.16em;color:var(--dim);text-transform:uppercase;line-height:2.2}
+  kbd{font:inherit;font-size:10px;border:1px solid rgba(255,255,255,.25);border-radius:4px;padding:2px 7px;color:var(--ink)}
+  .done{display:none;text-align:center;padding:70px 24px}
+  .done h2{margin:0 0 10px;font-size:clamp(28px,5vw,46px);letter-spacing:-.03em;text-transform:uppercase;font-weight:800}
+  .done p{color:var(--dim);margin:0 0 26px;font-size:15px}
+  footer{max-width:1020px;margin:0 auto;padding:0 22px 70px;color:var(--dim);font-size:11.5px;line-height:1.8}
+  footer em{font-style:normal;color:#b9b9c0}
   @media (max-width:560px){
-    .q{font-size:20px} .face{padding:26px 20px} .card{min-height:360px}
-    .brand{font-size:14px} .brand span{display:none}
+    .head{padding:18px 18px 0} h1{margin:8px 18px 2px}
+    .tip{padding:16px 18px 20px;gap:12px} .art{padding:10px 4px 0}
+    .mark{letter-spacing:.18em}
   }
 </style>
 </head>
 <body>
 <header>
-  <div class="bar">
-    <div class="brand">Trend-Continuation Strategy <span>· flashcards</span></div>
-    <div class="spacer"></div>
-    <div class="meter" id="meter">0 / 0</div>
-    <button id="shuffleBtn" title="Shuffle the deck">Shuffle</button>
-    <button id="resetBtn" title="Clear progress">Reset</button>
-  </div>
-  <div class="bar" style="padding-top:0">
+  <div class="wrap">
+    <div class="bar">
+      <div class="mark">TREND<i>/</i>CONTINUATION</div>
+      <div class="spacer"></div>
+      <div class="count" id="count">0 / 0</div>
+      <button id="shuffleBtn">Shuffle</button>
+      <button id="resetBtn">Reset</button>
+    </div>
     <div class="chips" id="chips"></div>
   </div>
+  <div class="rail"><b id="rail" style="width:0%"></b></div>
 </header>
 
 <main>
-  <div class="stage" id="stage">
-    <div class="card" id="card" tabindex="0" role="button" aria-live="polite">
-      <div class="cardtop">
-        <div class="tag" id="tag">—</div>
-        <div class="n" id="pos"></div>
-      </div>
-      <div class="face" id="face"></div>
+  <div class="card" id="card" tabindex="0" role="group" aria-labelledby="h1">
+    <div class="head">
+      <div class="tag" id="tag">—</div>
+      <div class="idx" id="idx"></div>
     </div>
-    <div class="act" id="act" style="display:none">
-      <button class="got" id="gotBtn">Got it &nbsp;<kbd>G</kbd></button>
-      <button class="miss" id="missBtn">Review again &nbsp;<kbd>R</kbd></button>
+    <h1 id="h1">—</h1>
+    <div class="art" id="art"></div>
+    <div class="tip">
+      <div class="fl">TIP</div>
+      <p id="tip">—</p>
     </div>
-    <div class="nav">
-      <button id="prevBtn">← Previous &nbsp;<kbd>←</kbd></button>
-      <button id="nextBtn">Next → &nbsp;<kbd>→</kbd></button>
-    </div>
-    <div class="done" id="done">
-      <h2>Deck complete</h2>
-      <p id="doneStats"></p>
-      <button id="againBtn">Study the missed cards</button>
-    </div>
-    <div class="hint">
-      <kbd>space</kbd> flip · <kbd>←</kbd> <kbd>→</kbd> move · <kbd>G</kbd> got it · <kbd>R</kbd> review · <kbd>S</kbd> shuffle
-    </div>
+  </div>
+
+  <div class="act" id="act" style="display:none">
+    <button class="got" id="gotBtn">Got it &nbsp;<kbd>G</kbd></button>
+    <button class="miss" id="missBtn">Review &nbsp;<kbd>R</kbd></button>
+  </div>
+  <div class="nav">
+    <button id="prevBtn">← Prev &nbsp;<kbd>←</kbd></button>
+    <button id="nextBtn">Next → &nbsp;<kbd>→</kbd></button>
+  </div>
+
+  <div class="done" id="done">
+    <h2>Deck complete</h2>
+    <p id="doneStats"></p>
+    <button id="againBtn">Study the missed cards</button>
+  </div>
+
+  <div class="hint">
+    <kbd>space</kbd> reveal tip · <kbd>←</kbd><kbd>→</kbd> move · <kbd>G</kbd> got it · <kbd>R</kbd> review · <kbd>S</kbd> shuffle
   </div>
 </main>
 
 <footer>
-  Source: <em>The Only Day Trading Strategy You Will Ever Need (Full Tutorial: Beginner To Advanced)</em> — The Trading Channel.
-  Cards are a study aid summarising that video; nothing here is trading advice.
+  <em>Trend-continuation strategy — visual study cards.</em> Summarises “The Only Day Trading Strategy You Will Ever Need” (The Trading Channel).
+  Diagrams are schematic. Nothing here is trading advice.
 </footer>
 
 <script>
-var CARDS = [{"t": "Trend", "q": "What is a MAJOR swing level?", "a": "The top and the bottom of an IMPULSIVE move. An impulsive move is one that BREAKS previous structure. Minor swing levels are everything in between — and in a trending market you ignore them entirely."}, {"t": "Trend", "q": "When can you confirm a pullback low is a major swing level?", "a": "Only AFTER price breaks into new highs. Until then the pullback could keep going — you cannot know it was the bottom until a new high confirms it."}, {"t": "Trend", "q": "In an uptrend, what single rule tells you the trend is still intact?", "a": "Price stays ABOVE the most recent major swing low. No matter what happens in between (choppiness, consolidation), above that level = still an uptrend. This is why you draw horizontal lines at your major swing lows in an uptrend."}, {"t": "Trend", "q": "What is the FIRST hint that an uptrend may be ending?", "a": "A break and CLOSE below the most recent major swing low. It's a 'possible reversal' — you stop looking for long trades from that point."}, {"t": "Trend", "q": "What does the video call a 'one-two-three reversal move'?", "a": "The sequence that flips structure: the prior major swing level breaks, then price fails to reclaim it, then the next level breaks. Once the major support breaks after that, it is a downtrend — not a pullback."}, {"t": "Trend", "q": "How do you spot CONSOLIDATION, and what do you do about it?", "a": "You get a push to a major swing level, then a break and close back ABOVE the previous pullback high — while the prior low stays intact. Both sides now have a case = indecision. DO NOT TRADE. The video: 'this is when all of our losses occur.' Waits until one boundary level breaks."}, {"t": "Trend", "q": "Are support and resistance lines or zones?", "a": "ZONES. The video treats them as areas, not exact lines — e.g. combining two major swing levels that sit close together and splitting the difference between them."}, {"t": "Trend", "q": "How does the video define a pullback (its most objective rule)?", "a": "At least TWO candles, and real movement — not two tiny candles before a breakout. The author admits there is no fully objective rule for this; it comes with screen time."}, {"t": "Trend", "q": "At the very start, why do most day traders fail?", "a": "Two reasons: (1) no strategy they can stay consistent to, so they switch constantly or trade randomly; (2) they HAVE a strategy but it loses money, and they keep trading it until they're too frustrated to continue."}, {"t": "Trend", "q": "Does this strategy only work for forex or only for day trading?", "a": "No. The author uses it across ALL time frames and in the STOCK, FOREX and CRYPTO markets he trades."}, {"t": "Rules", "q": "RULE 1 of the strategy — what is it?", "a": "HIGHER TIME FRAME TREND. Align yourself with the trend of one time frame UP from the one you trade. Only take trades in that direction."}, {"t": "Rules", "q": "RULE 2 — what level do you use, and from which time frame?", "a": "The LAST MAJOR SWING LEVEL that was broken, taken from the higher time frame. Once a major swing level breaks, that is the level you watch for trend continuation."}, {"t": "Rules", "q": "RULE 3 — what is the entry trigger?", "a": "REJECTION at the zone, on the trading time frame. Bearish setup = DOUBLE TOP; bullish setup = DOUBLE BOTTOM."}, {"t": "Rules", "q": "Give the exact time-frame pairing ladder.", "a": "5 min → check the 15 min. 15 min → the 1 hour. 1 hour → the 4 hour. 4 hour → the daily. Always exactly ONE time frame up; the author rarely goes higher than the daily."}, {"t": "Rules", "q": "Why does the strategy insist on the higher time frame at all?", "a": "To be on the correct SIDE of the market. The higher time frame tells you whether to be hunting longs or shorts. Rule 1 exists so rule 3's double top / double bottom lands in the direction of the bigger trend."}, {"t": "Entry", "q": "Define the ZONE for a bearish (double top) entry, precisely.", "a": "Between the HIGHEST BODIES of the previous swing high and the HIGHEST WICK of that same swing high. Wicks may touch it; bodies may close in it."}, {"t": "Entry", "q": "What is the ONE thing that must NOT happen inside the zone?", "a": "A CLOSE above the zone. A close above is continuation, not rejection — that's exactly what price had been doing before. Rejection requires price to be turned away."}, {"t": "Entry", "q": "After price touches the zone, what confirms the entry?", "a": "For a short: a RED candle showing sellers taking control. For a long: a GREEN candle showing buying pressure out of the zone."}, {"t": "Entry", "q": "What is the exact entry price?", "a": "The CLOSE of the rejection candle — equivalently, the OPEN of the next candle."}, {"t": "Entry", "q": "In the bullish recap on MSFT, what confirmed the double bottom?", "a": "Price pushed down, formed a bottom, formed a neckline, then RETESTED that area WITHOUT closing below it. That gave buying pressure — then a green candle, followed by an even bigger green candle, which is where the entry is taken."}, {"t": "Entry", "q": "What happens if price closes back above your zone before entry?", "a": "You are NOT interested in going short yet. The video shows exactly this: price broke through the high making a higher high, so no trade — the author waited for a push back into the level that then actually rejected."}, {"t": "Risk", "q": "Where does the STOP LOSS go?", "a": "BEYOND the extreme of the rejection: below the lowest low of the double bottom / rejection (for longs), or above the highest high (for shorts)."}, {"t": "Risk", "q": "What extra buffer is added to the stop, and why?", "a": "The ATR (Average True Range). The author uses ATR(14) — the average movement of the last 14 candles — and places the stop that far beyond the swing low, to stay aligned with current market VOLATILITY."}, {"t": "Risk", "q": "Give the worked stop-loss example from the video.", "a": "MSFT long: swing low at 185.20, ATR 2.31 → stop placed 2.31 below the low, around 182.89."}, {"t": "Risk", "q": "Where is the TARGET?", "a": "Back at the PREVIOUS major swing level (previous resistance for longs, previous support for shorts). If there are two close together, pick the one further away / the sensible one — the video picks the slightly lower of two resistance levels so the target isn't over-ambitious."}, {"t": "Risk", "q": "What reward-to-risk ratio does the strategy target?", "a": "About 2:1. The demonstrated trades came out at 2.4:1 (AUD/CAD) and 2.3:1 (Litecoin)."}, {"t": "Risk", "q": "What is the strategy's win rate, and why does it still make money?", "a": "'A little bit less than 50%' / 'somewhere around 50%.' With a 2:1 reward:risk, ~50% is a POSITIVE EXPECTANCY — the edge only shows up over a large sample size."}, {"t": "Risk", "q": "Why is a risk management plan necessary if the strategy already has an edge?", "a": "Because a ~50% win rate means the next trade is close to a coin flip. If you risk your whole account on one trade you're gambling, not trading. Risk management keeps you 'chips and a chair at the poker table' long enough for the edge to play out."}, {"t": "Risk", "q": "What are the TWO jobs of the risk management plan?", "a": "(1) Stop you from blowing the account — it cuts that chance dramatically. (2) Keep you OUT OF YOUR EMOTIONS — fear and greed can't control decisions if the per-trade loss is small enough to handle comfortably."}, {"t": "Mindset", "q": "Name the 'Triangle of Trading Success' — the three required skills.", "a": "1) A STRATEGY you can stay consistent to that makes money over time. 2) A RISK MANAGEMENT PLAN that keeps you out of your emotions and keeps you from blowing the account. 3) TRADING PSYCHOLOGY / discipline."}, {"t": "Mindset", "q": "What does trading psychology actually protect you from?", "a": "FOMO — buying because you missed a move; switching strategies; and REVENGE trading — going super aggressive right after a stop-out to win the money back. All are emotional mistakes that destroy the edge."}, {"t": "Mindset", "q": "Why does making the per-trade loss SMALL matter emotionally?", "a": "You WILL have losing trades — the author does too. The point is for losses not to affect you emotionally, because emotional decisions wreck your statistical advantage and the whole money-making strategy with it."}, {"t": "Mindset", "q": "What is the stated purpose of a rules-based strategy?", "a": "Consistency. A checklist beside your desk: once all the rules are ticked off, you enter. The video: 'a strategy that's rules based so you can stay consistent to it and it's proven to make money over time.'"}, {"t": "Practice", "q": "Walk through the FULL pre-trade checklist in order.", "a": "1) Identify the higher-time-frame trend (one TF up). 2) Find the LAST broken major swing level on that higher time frame — mark it as a ZONE. 3) Drop to the trading time frame. 4) Wait for price to pull back into the zone. 5) Look for a double top (short) / double bottom (long) with no close beyond the zone. 6) Wait for the red/green confirmation candle. 7) Enter at its close. 8) Stop = beyond the swing extreme ± ATR. 9) Target = previous major swing level. 10) Target ≈ 2:1."}, {"t": "Practice", "q": "What does the strategy say to do while price is chopping between two levels?", "a": "Nothing. Everything between the two boundary levels is consolidation and minor swing levels only. Do not trade until one level breaks and shows you the direction."}, {"t": "Practice", "q": "Recap the AUD/CAD trade from the video.", "a": "5-minute chart, bearish TREND CONTINUATION. Price pulled back to the previously broken major swing level, showed rejection, and ran down to target. ~2.4:1 R:R, a couple of thousand dollars, in roughly one to two hours."}, {"t": "Practice", "q": "Recap the MSFT example used for the full recap.", "a": "4-hour chart gives the trend and the last broken major swing level. Drop to the 1-hour to trade. Double bottom: push down, bottom, neckline, retest without closing below, green candle then a bigger green candle = entry. Stop below the low minus ATR(14) 2.31. Target the previous major swing high."}, {"t": "Practice", "q": "On the MSFT recap, which time frame is the TREND read on and which is TRADED?", "a": "Trend read on the 4-hour; traded on the 1-hour. The rule is always one time frame up from the trading chart."}, {"t": "Practice", "q": "Is this strategy limited to the examples shown (forex pairs, Litecoin, MSFT)?", "a": "No — the author explicitly states it works across all markets (stock, forex, crypto) and all time frames, and frames it as his favourite after 10 years of trading."}, {"t": "Practice", "q": "What does the video say about making this completely objective?", "a": "It can't be, and the author says so openly several times — particularly for identifying pullbacks and drawing major swing levels. That part is judgment honed by screen time, which is why the trend-identification lesson takes up most of the video."}];
+var CARDS = [{"tag":"STRUCTURE","title":"TWO KINDS OF SWING","tip":"Only the tops and bottoms of IMPULSIVE moves are structure. Ignore everything between.","spec":{"kind":"path","path":[[4,78],[13,53],[19,61],[30,27],[38,38],[45,31],[55,50],[64,19],[72,31],[79,23],[88,8],[96,18]],"dots":[{"i":0,"k":"major"},{"i":3,"k":"major"},{"i":6,"k":"major"},{"i":7,"k":"major"},{"i":10,"k":"major"},{"i":1,"k":"minor"},{"i":2,"k":"minor"},{"i":4,"k":"minor"},{"i":5,"k":"minor"},{"i":8,"k":"minor"},{"i":9,"k":"minor"},{"i":11,"k":"minor"}],"legend":[["major","MAJOR — tops AND bottoms of impulses"],["minor","MINOR — ignore these"]]}},{"tag":"STRUCTURE","title":"THE IMPULSIVE MOVE","tip":"An impulsive move BREAKS previous structure. That break is the whole definition.","spec":{"kind":"path","path":[[6,78],[26,50],[36,62],[70,22],[82,34],[96,16]],"broken":2,"hline":{"y":50,"label":"PRIOR LEVEL","dash":true},"dots":[{"i":2,"k":"major"},{"i":3,"k":"major"}],"note":{"x":56,"y":44,"text":"BREAKS IT"}}},{"tag":"STRUCTURE","title":"NOT A BOTTOM YET","tip":"You cannot call a low “the bottom” until price breaks into NEW HIGHS. It can keep going.","spec":{"kind":"path","path":[[6,40],[24,72],[40,54],[54,80],[70,44],[84,30],[96,18]],"hline":{"y":44,"label":"NEEDS THIS BREAK","dash":true},"dots":[{"i":2,"k":"q","label":"?"},{"i":4,"k":"q","label":"?"},{"i":6,"k":"major"}]}},{"tag":"STRUCTURE","title":"A REAL PULLBACK","tip":"At least TWO candles, and actual movement. Two tiny candles is not a pullback.","spec":{"kind":"pullback","good":true}},{"tag":"STRUCTURE","title":"TREND INTACT","tip":"Above the last major swing low = still an uptrend. Chopping does not change that.","spec":{"kind":"path","path":[[4,78],[13,53],[19,61],[30,27],[38,38],[45,31],[55,50],[64,19],[72,31],[79,23],[88,8],[96,18]],"hline":{"y":50,"label":"LAST MAJOR LOW"},"dots":[{"i":0,"k":"major"},{"i":6,"k":"major"},{"i":3,"k":"minor"},{"i":8,"k":"minor"}]}},{"tag":"STRUCTURE","title":"TREND OVER","tip":"A CLOSE below the last major swing low. Not a wick — a close.","spec":{"kind":"path","path":[[6,24],[24,52],[36,38],[52,64],[64,50],[78,86],[90,94],[96,88]],"hline":{"y":64,"label":"LAST MAJOR LOW"},"dots":[{"i":4,"k":"major"},{"i":6,"k":"break","label":"CLOSE"}],"note":{"x":80,"y":80,"text":"POSSIBLE REVERSAL"}}},{"tag":"STRUCTURE","title":"DO NOT TRADE THIS","tip":"Breaks the prior high, holds the prior low → both sides have a case. This is where losses happen.","spec":{"kind":"path","path":[[8,60],[26,30],[40,46],[58,26],[72,44],[86,30],[96,40]],"hline":{"y":30,"label":"PRIOR HIGH"},"hline2":{"y":46,"label":"PRIOR LOW"},"band":{"y1":30,"y2":46},"note":{"x":50,"y":52,"text":"CONSOLIDATION"}}},{"tag":"STRUCTURE","title":"ZONES, NOT LINES","tip":"Support and resistance are areas. Two levels near each other get combined into one zone.","spec":{"kind":"path","path":[[6,80],[26,54],[40,68],[62,42],[76,58],[96,30]],"band":{"y1":44,"y2":56},"note":{"x":50,"y":38,"text":"ONE ZONE"}}},{"tag":"STRUCTURE","title":"UP vs DOWN","tip":"Higher highs and higher lows = up. Lower highs and lower lows = down. Nothing else needed.","spec":{"kind":"two","a":[[4,78],[13,53],[19,61],[30,27],[38,38],[45,31],[55,50],[64,19],[72,31],[79,23],[88,8],[96,18]],"b":[[4,22],[13,47],[19,39],[30,73],[38,62],[45,69],[55,50],[64,81],[72,69],[79,77],[88,92],[96,82]],"la":"UPTREND","lb":"DOWNTREND"}},{"tag":"RULES","title":"ONE TIMEFRAME UP","tip":"Trade one timeframe. Read the trend on the next one up — always exactly one step.","spec":{"kind":"ladder","steps":["5m","15m","1h","4h","1d"],"pairs":[[0,1],[1,2],[2,3],[3,4]]}},{"tag":"RULES","title":"RULE 1 — TREND","tip":"Align with the higher timeframe. Only hunt in the direction it points.","spec":{"kind":"rule","n":"01","label":"HIGHER TIMEFRAME TREND","art":"trend"}},{"tag":"RULES","title":"RULE 2 — THE LEVEL","tip":"The LAST broken major swing level on that higher timeframe becomes your zone.","spec":{"kind":"rule","n":"02","label":"LAST BROKEN LEVEL","art":"level","sub":{"kind":"path","path":[[8,72],[30,34],[44,52],[68,26],[82,40],[96,20]],"broken":30,"band":{"y1":30,"y2":44},"dot":{"i":3}}}},{"tag":"RULES","title":"RULE 3 — REJECTION","tip":"Pullback into the zone, then a DOUBLE TOP. Enter on the confirmation candle.","spec":{"kind":"rule","n":"03","label":"REJECTION AT THE ZONE","art":"reject"}},{"tag":"RULES","title":"THE CHECKLIST","tip":"No checklist, no consistency. Three rules, in order, every time.","spec":{"kind":"flow","steps":["TREND","LEVEL","REJECT"]}},{"tag":"ENTRY","title":"THE ZONE, EXACTLY","tip":"Between the highest BODIES and the highest WICK of the prior swing high.","spec":{"kind":"candles","candles":[{"x":12,"o":78,"h":72,"l":84,"c":80},{"x":24,"o":52,"h":44,"l":60,"c":48},{"x":36,"o":60,"h":52,"l":70,"c":66},{"x":48,"o":44,"h":38,"l":52,"c":40},{"x":60,"o":40,"h":30,"l":44,"c":34},{"x":72,"o":38,"h":28,"l":42,"c":36},{"x":84,"o":36,"h":40,"l":58,"c":54}],"band":{"y1":30,"y2":44},"lab1":"HIGHEST WICK","lab2":"HIGHEST BODIES"}},{"tag":"ENTRY","title":"THE FORBIDDEN CLOSE","tip":"A CLOSE above the zone is continuation, not rejection. Wait — no trade.","spec":{"kind":"candles","bad":true,"candles":[{"x":12,"o":78,"h":72,"l":84,"c":80},{"x":26,"o":56,"h":48,"l":62,"c":52},{"x":40,"o":52,"h":44,"l":58,"c":48},{"x":54,"o":46,"h":34,"l":50,"c":38},{"x":68,"o":40,"h":26,"l":44,"c":30},{"x":82,"o":36,"h":18,"l":40,"c":20}],"band":{"y1":28,"y2":44},"note":{"x":76,"y":12,"text":"CLOSE = NO TRADE"}}},{"tag":"ENTRY","title":"DOUBLE TOP → SELL","tip":"Wick into the zone, then a RED candle. Sellers have taken control.","spec":{"kind":"candles","candles":[{"x":10,"o":76,"h":70,"l":82,"c":78},{"x":22,"o":52,"h":42,"l":58,"c":46},{"x":34,"o":60,"h":54,"l":72,"c":70},{"x":46,"o":44,"h":34,"l":50,"c":38},{"x":58,"o":40,"h":30,"l":46,"c":42},{"x":70,"o":36,"h":28,"l":42,"c":40},{"x":82,"o":42,"h":36,"l":66,"c":62},{"x":93,"o":64,"h":58,"l":78,"c":76}],"band":{"y1":30,"y2":44},"mark":{"x":82,"color":"sell","label":"ENTRY"}}},{"tag":"ENTRY","title":"DOUBLE BOTTOM → BUY","tip":"Wick into the zone, then a GREEN candle. Buyers have taken control.","spec":{"kind":"candles","mirror":true,"candles":[{"x":10,"o":26,"h":20,"l":32,"c":24},{"x":22,"o":50,"h":44,"l":58,"c":54},{"x":34,"o":42,"h":30,"l":46,"c":34},{"x":46,"o":58,"h":52,"l":68,"c":64},{"x":58,"o":60,"h":54,"l":72,"c":58},{"x":70,"o":62,"h":56,"l":74,"c":60},{"x":82,"o":58,"h":52,"l":64,"c":54},{"x":93,"o":52,"h":40,"l":58,"c":42}],"band":{"y1":56,"y2":70},"mark":{"x":82,"color":"buy","label":"ENTRY"}}},{"tag":"ENTRY","title":"ENTRY PRICE","tip":"The CLOSE of the rejection candle. Equivalently the OPEN of the next one.","spec":{"kind":"candles","candles":[{"x":14,"o":74,"h":68,"l":80,"c":76},{"x":30,"o":52,"h":44,"l":58,"c":48},{"x":46,"o":56,"h":48,"l":64,"c":60},{"x":62,"o":44,"h":36,"l":50,"c":40},{"x":78,"o":42,"h":32,"l":50,"c":46},{"x":92,"o":48,"h":42,"l":72,"c":68}],"band":{"y1":32,"y2":46},"mark":{"x":78,"color":"sell","label":"ENTER HERE"}}},{"tag":"RISK","title":"STOP + ATR","tip":"Beyond the swing extreme, then one ATR further — so the stop scales with volatility.","spec":{"kind":"stop"}},{"tag":"RISK","title":"TARGET","tip":"The PREVIOUS major swing level. If two sit close, take the more realistic one.","spec":{"kind":"path","path":[[6,84],[26,52],[38,70],[58,44],[70,60],[86,26],[96,34]],"hline":{"y":26,"label":"TARGET"},"dot":{"i":5,"k":"major"},"note":{"x":22,"y":40,"text":"PREVIOUS LEVEL"}}},{"tag":"RISK","title":"TWO TO ONE","tip":"Risk one to make two. Anything less and the win rate has to do all the work.","spec":{"kind":"rr"}},{"tag":"RISK","title":"WHY 50% STILL WINS","tip":"Five wins at +2R, five losses at −1R. Fifty percent is a positive edge at 2:1.","spec":{"kind":"edge"}},{"tag":"RISK","title":"TWO JOBS","tip":"Keep you solvent. Keep you unemotional. Both come from the loss being small.","spec":{"kind":"rule2","a":{"n":"01","label":"KEEP THE ACCOUNT","art":"shield"},"b":{"n":"02","label":"KEEP YOU CALM","art":"calm"}}},{"tag":"MINDSET","title":"THE TRIANGLE","tip":"All three sides or none of it works. Strategy is only one of them.","spec":{"kind":"triangle","sides":["STRATEGY","RISK","PSYCHOLOGY"]}},{"tag":"MINDSET","title":"THE THREE KILLERS","tip":"FOMO, revenge trading, and strategy-hopping. All emotional. All fatal to the edge.","spec":{"kind":"killers","items":["FOMO","REVENGE","SWITCHING"]}},{"tag":"MINDSET","title":"WHY RULES","tip":"A checklist beside the desk. Rules ticked off → enter. That is what consistency is.","spec":{"kind":"checklist","items":["HIGHER TF TREND","LAST BROKEN LEVEL","REJECTION","STOP BEYOND + ATR","TARGET PREV LEVEL","2:1 OR SKIP"]}}];
 
-/* ---------------------------------------------------------------- state */
-var P = { order: [], i: 0, flipped: false, got: {}, filter: 'All' };
-var KEY = 'tc-flash-v1';
-try { var s = JSON.parse(localStorage.getItem(KEY) || '{}'); if (s && s.got) P.got = s.got; } catch (e) {}
-function save(){ try { localStorage.setItem(KEY, JSON.stringify({ got: P.got })); } catch (e) {} }
+/* ======================================================================
+   SVG renderer.  Everything below draws into a 0..100 x 0..100 box with y
+   pointing DOWN (screen space), then the svg is scaled to the card width.
+   ====================================================================== */
+var INK='#ffffff', DIM='#6d6d76', FAINT='#25252b', VOLT='#d8ff3e', SELL='#ff4b3e';
 
-var TOPICS = ['All'];
-CARDS.forEach(function (c) { if (TOPICS.indexOf(c.t) < 0) TOPICS.push(c.t); });
-
-function deck(){
-  return CARDS.map(function (c, n) { return n; })
-              .filter(function (n) { return P.filter === 'All' || CARDS[n].t === P.filter; });
-}
-function reshuffle(){
-  P.order = deck();
-  for (var i = P.order.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var t = P.order[i]; P.order[i] = P.order[j]; P.order[j] = t;
+/* Catmull-Rom-ish smoothing so price paths look like markets, not polylines. */
+function smooth(pts, t){
+  t = t === undefined ? 0.5 : t;
+  if (pts.length < 3) return 'M' + pts.map(function(p){return p[0]+' '+p[1];}).join(' L');
+  var d = 'M' + pts[0][0] + ' ' + pts[0][1];
+  for (var i = 0; i < pts.length - 1; i++){
+    var p0 = pts[i-1] || pts[i], p1 = pts[i], p2 = pts[i+1], p3 = pts[i+2] || p2;
+    var c1x = p1[0] + (p2[0]-p0[0])/6*t, c1y = p1[1] + (p2[1]-p0[1])/6*t;
+    var c2x = p2[0] - (p3[0]-p1[0])/6*t, c2y = p2[1] - (p3[1]-p1[1])/6*t;
+    d += ' C' + c1x+' '+c1y+' '+c2x+' '+c2y+' '+p2[0]+' '+p2[1];
   }
-  P.i = 0; P.flipped = false; render();
+  return d;
 }
-function ordered(){ P.order = deck(); P.i = 0; P.flipped = false; render(); }
+function txt(x,y,s,o){
+  o = o || {};
+  return '<text x="'+x+'" y="'+y+'" fill="'+(o.fill||DIM)+'" font-size="'+(o.size||3.4)+'" '+
+    'font-weight="'+(o.weight||700)+'" letter-spacing="'+(o.ls||0.32)+'" '+
+    'text-anchor="'+(o.anchor||'start')+'" font-family="Helvetica Neue,Helvetica,Arial,sans-serif">'+s+'</text>';
+}
+function zoneBand(y1,y2){
+  return '<rect x="0" y="'+y1+'" width="100" height="'+(y2-y1)+'" fill="rgba(255,255,255,.085)"/>'+
+    '<line x1="0" y1="'+y1+'" x2="100" y2="'+y1+'" stroke="rgba(255,255,255,.34)" stroke-width="0.4" stroke-dasharray="2 1.6"/>'+
+    '<line x1="0" y1="'+y2+'" x2="100" y2="'+y2+'" stroke="rgba(255,255,255,.34)" stroke-width="0.4" stroke-dasharray="2 1.6"/>';
+}
+function hLine(y,label,dash){
+  var s = '<line x1="0" y1="'+y+'" x2="100" y2="'+y+'" stroke="'+(dash?'rgba(216,255,62,.75)':'rgba(255,255,255,.42)')+
+    '" stroke-width="0.5"'+(dash?' stroke-dasharray="3 2"':'')+'/>';
+  if (label) s += txt(1.5, y-1.6, label, {fill: dash?VOLT:'#9a9aa3', size:3.1});
+  return s;
+}
+function dot(p,kind,label){
+  if (kind === 'major') return '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="1.9" fill="'+VOLT+'"/>';
+  if (kind === 'minor') return '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="0.95" fill="none" stroke="'+DIM+'" stroke-width="0.5"/>';
+  if (kind === 'break') return '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="2.3" fill="none" stroke="'+SELL+'" stroke-width="0.8"/>'+
+    (label?txt(p[0]+3.4, p[1]+1.2, label, {fill:SELL, size:3.1}):'');
+  if (kind === 'entry') return '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="2.2" fill="'+VOLT+'"/>';
+  if (kind === 'q') return '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="1.7" fill="none" stroke="'+DIM+'" stroke-width="0.5" stroke-dasharray="1.2 1"/>'+
+    (label?'<text x="'+p[0]+'" y="'+(p[1]+1.1)+'" fill="'+DIM+'" font-size="2.2" text-anchor="middle" font-family="Helvetica">'+label+'</text>':'');
+  return '';
+}
+function frame(inner){
+  return '<svg viewBox="0 0 100 100" preserveAspectRatio="none" style="aspect-ratio:100/62">'+
+    '<rect x="0" y="0" width="100" height="100" fill="none"/>'+
+    '<g style="vector-effect:non-scaling-stroke">'+inner+'</g></svg>';
+}
 
-/* ---------------------------------------------------------------- render */
-function esc(x){
-  return String(x).replace(/[&<>"]/g, function (m) {
-    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[m];
+function draw(spec){
+  var s = '', i, pts = spec.path || [];
+
+  if (spec.kind === 'path'){
+    if (spec.band) s += zoneBand(spec.band.y1, spec.band.y2);
+    if (spec.hline)  s += hLine(spec.hline.y, spec.hline.label, spec.hline.dash);
+    if (spec.hline2) s += hLine(spec.hline2.y, spec.hline2.label, true);
+    s += '<path d="'+smooth(pts)+'" fill="none" stroke="'+INK+'" stroke-width="1" vector-effect="non-scaling-stroke"/>';
+    if (spec.broken !== undefined && pts[spec.broken]){
+      var b = pts[spec.broken];
+      s += '<line x1="'+b[0]+'" y1="'+b[1]+'" x2="'+b[0]+'" y2="'+(b[1]+10)+'" stroke="'+VOLT+'" stroke-width="0.4" stroke-dasharray="1.4 1.4"/>';
+    }
+    (spec.dots||[]).forEach(function(d){ s += dot(pts[d.i], d.k, d.label); });
+    if (spec.legend){
+      var y0 = 92;
+      spec.legend.forEach(function(l,n){
+        var y = y0 + n*5;
+        s += (l[0]==='major' ? '<circle cx="3" cy="'+y+'" r="1.6" fill="'+VOLT+'"/>'
+                             : '<circle cx="3" cy="'+y+'" r="0.95" fill="none" stroke="'+DIM+'" stroke-width="0.5"/>');
+        s += txt(6.5, y+1.1, l[1], {fill: l[0]==='major'?INK:DIM, size:3});
+      });
+    }
+    if (spec.note) s += txt(spec.note.x, spec.note.y, spec.note.text, {fill:VOLT, size:3.3, anchor:'middle'});
+    return frame(s);
+  }
+
+  if (spec.kind === 'two'){
+    var mid = 50;
+    s += txt(1.5, 6, spec.la, {fill:VOLT, size:3.4});
+    s += '<path d="'+smooth(scale(spec.a, 0, mid-4))+'" fill="none" stroke="'+INK+'" stroke-width="0.9" vector-effect="non-scaling-stroke"/>';
+    s += txt(1.5, 56, spec.lb, {fill:SELL, size:3.4});
+    s += '<path d="'+smooth(scale(spec.b, mid+4, 100))+'" fill="none" stroke="'+INK+'" stroke-width="0.9" vector-effect="non-scaling-stroke"/>';
+    return frame(s);
+  }
+
+  if (spec.kind === 'pullback'){
+    /* left: two tiny candles = NOT a pullback.  right: two real ones = pullback. */
+    s += txt(24, 6, 'NOT A PULLBACK', {fill:SELL, size:3.1, anchor:'middle'});
+    s += txt(76, 6, 'PULLBACK', {fill:VOLT, size:3.1, anchor:'middle'});
+    s += candSet([{x:-34,o:46,h:42,l:50,c:44},{x:-24,o:44,h:41,l:47,c:42.5},
+                  {x:2,o:44,h:41,l:47,c:43},{x:12,o:43,h:40,l:46,c:41}], 50, 1.0);
+    s += candSet([{x:30,o:40,h:32,l:46,c:44},{x:40,o:44,h:36,l:56,c:54},
+                  {x:50,o:54,h:46,l:64,c:62}], 50, 1.0);
+    s += '<line x1="50" y1="8" x2="50" y2="94" stroke="'+FAINT+'" stroke-width="0.4"/>';
+    return frame(s);
+  }
+
+  if (spec.kind === 'ladder'){
+    var n = spec.steps.length, bw = 15, gap = 3.6;
+    spec.steps.forEach(function(st,k){
+      var x = k*(bw+gap)+3, y = 70 - k*13;
+      s += '<rect x="'+x+'" y="'+y+'" width="'+bw+'" height="11" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="0.5"/>';
+      s += txt(x+bw/2, y+7.4, st, {fill:k%2?INK:VOLT, size:4, anchor:'middle', ls:0});
+      if (k < n-1){
+        s += '<path d="M'+(x+bw)+' '+(y+5.5)+' l2.6 -2.6 l0 5.2 z" fill="'+VOLT+'"/>';
+      }
+    });
+    s += txt(3, 92, 'TREND UP ONE · TRADE THE LOWER', {fill:DIM, size:3, ls:0.4});
+    return frame(s);
+  }
+
+  if (spec.kind === 'rule'){
+    s += '<text x="2" y="30" fill="'+FAINT+'" font-size="34" font-weight="800" font-family="Helvetica Neue,Helvetica,Arial" letter-spacing="-2">'+spec.n+'</text>';
+    s += txt(2, 44, spec.label, {fill:INK, size:4.6, ls:0.2});
+    if (spec.art === 'trend'){
+      s += '<path d="'+smooth([[52,84],[66,58],[74,70],[88,40],[96,50]])+'" fill="none" stroke="'+INK+'" stroke-width="1" vector-effect="non-scaling-stroke"/>';
+      s += '<path d="M88 40 l6 4 l-6 4" fill="none" stroke="'+VOLT+'" stroke-width="0.8"/>';
+      s += txt(52, 92, 'ALIGN, THEN HUNT', {fill:DIM, size:3});
+    } else if (spec.art === 'reject'){
+      s += candSet([{x:56,o:80,h:74,l:86,c:82},{x:66,o:54,h:44,l:60,c:48},
+                    {x:76,o:62,h:54,l:74,c:72},{x:86,o:44,h:34,l:50,c:38},
+                    {x:96,o:40,h:30,l:46,c:42}], 50, 1.0, true);
+      s += zoneBand(30, 44);
+      s += txt(56, 92, 'DOUBLE TOP + RED CANDLE', {fill:DIM, size:3});
+    }
+    if (spec.sub){
+      var sp = spec.sub;
+      s += '<g transform="translate(48,52) scale(0.5)">';
+      if (sp.band) s += zoneBand(sp.band.y1, sp.band.y2);
+      s += '<path d="'+smooth(sp.path)+'" fill="none" stroke="'+INK+'" stroke-width="2" vector-effect="non-scaling-stroke"/>';
+      s += '<line x1="0" y1="'+sp.path[1][1]+'" x2="100" y2="'+sp.path[1][1]+'" stroke="'+VOLT+'" stroke-width="0.8" stroke-dasharray="4 3"/>';
+      s += '</g>';
+      s += txt(48, 96, 'BROKEN LEVEL = YOUR ZONE', {fill:VOLT, size:3});
+    }
+    return frame(s);
+  }
+
+  if (spec.kind === 'flow'){
+    spec.steps.forEach(function(st,k){
+      var y = 14 + k*26;
+      s += '<rect x="4" y="'+y+'" width="92" height="20" fill="none" stroke="rgba(255,255,255,.28)" stroke-width="0.5"/>';
+      s += '<rect x="4" y="'+y+'" width="4" height="20" fill="'+(k===2?VOLT:'rgba(255,255,255,.3)')+'"/>';
+      s += txt(13, y+13, '0'+(k+1), {fill:DIM, size:3.6, ls:0});
+      s += txt(24, y+13, st, {fill:INK, size:5, ls:0.3});
+      if (k < spec.steps.length-1) s += '<path d="M50 '+(y+20)+' l0 5" stroke="'+VOLT+'" stroke-width="0.6"/>';
+    });
+    return frame(s);
+  }
+
+  if (spec.kind === 'candles'){
+    s += candSet(spec.candles, 0, 1.0, false, spec.mirror);
+    if (spec.band) s += zoneBand(spec.band.y1, spec.band.y2);
+    if (spec.lab1) s += txt(1.5, spec.band.y1-1.8, spec.lab1, {fill:VOLT, size:3});
+    if (spec.lab2) s += txt(1.5, spec.band.y2+4.4, spec.lab2, {fill:'#9a9aa3', size:3});
+    if (spec.mark){
+      var cx = spec.mark.x, col = spec.mark.color==='buy'?VOLT:SELL;
+      s += '<path d="M'+cx+' 6 l2.4 -3.4 l-4.8 0 z" fill="'+col+'"/>';
+      s += txt(cx, 14.5, spec.mark.label, {fill:col, size:3, anchor:'middle'});
+    }
+    if (spec.note) s += txt(spec.note.x, spec.note.y, spec.note.text, {fill:SELL, size:3.4, anchor:'middle'});
+    if (spec.bad) s += '<path d="M92 26 l8 8 M100 26 l-8 8" stroke="'+SELL+'" stroke-width="0.8"/>';
+    return frame(s);
+  }
+
+  if (spec.kind === 'stop'){
+    var low = 44, atr = 9;
+    s += candSet([{x:22,o:30,h:24,l:38,c:28},{x:34,o:40,h:34,l:48,c:44},
+                  {x:46,o:44,h:38,l:52,c:46},{x:58,o:48,h:42,l:56,c:50},
+                  {x:70,o:52,h:44,l:60,c:48}], 0, 1.0);
+    s += '<line x1="0" y1="'+low+'" x2="100" y2="'+low+'" stroke="rgba(255,255,255,.4)" stroke-width="0.5"/>';
+    s += txt(1.5, low-2, 'DOUBLE-BOTTOM LOW', {fill:'#9a9aa3', size:3});
+    s += '<line x1="0" y1="'+(low+atr)+'" x2="100" y2="'+(low+atr)+'" stroke="'+SELL+'" stroke-width="0.7"/>';
+    s += txt(1.5, low+atr+4.4, 'STOP = LOW − ATR', {fill:SELL, size:3.2});
+    s += '<line x1="86" y1="'+low+'" x2="86" y2="'+(low+atr)+'" stroke="'+SELL+'" stroke-width="0.5"/>';
+    s += '<path d="M86 '+(low+atr/2)+' l-2.4 -1.6 M86 '+(low+atr/2)+' l-2.4 1.6" stroke="'+SELL+'" stroke-width="0.5"/>';
+    s += txt(84, low+atr/2+1, '1 ATR', {fill:SELL, size:2.9, anchor:'end'});
+    return frame(s);
+  }
+
+  if (spec.kind === 'rr'){
+    s += '<rect x="6" y="30" width="26" height="12" fill="'+SELL+'" opacity="0.85"/>';
+    s += txt(6, 26, 'RISK  1R', {fill:SELL, size:3.4});
+    s += '<rect x="6" y="52" width="52" height="12" fill="'+VOLT+'" opacity="0.9"/>';
+    s += txt(6, 48, 'REWARD  2R', {fill:VOLT, size:3.4});
+    s += '<line x1="6" y1="72" x2="94" y2="72" stroke="'+FAINT+'" stroke-width="0.4"/>';
+    s += txt(6, 82, '50% WIN RATE × 2:1 = POSITIVE EXPECTANCY', {fill:INK, size:3.2, ls:0.24});
+    return frame(s);
+  }
+
+  if (spec.kind === 'edge'){
+    /* ten trades: five +2R, five −1R, interleaved */
+    var seq = [2,-1,2,-1,2,-1,2,-1,2,-1], cum = 0, base = 78, sc = 5.2;
+    s += '<line x1="3" y1="'+base+'" x2="97" y2="'+base+'" stroke="'+FAINT+'" stroke-width="0.4"/>';
+    for (i = 0; i < seq.length; i++){
+      var x = 6 + i*9.4, y0 = base - cum*sc; cum += seq[i];
+      var y1 = base - cum*sc;
+      s += '<rect x="'+x+'" y="'+Math.min(y0,y1)+'" width="5" height="'+Math.abs(y1-y0)+
+        '" fill="'+(seq[i] > 0 ? VOLT : SELL)+'" opacity="'+(seq[i] > 0?0.95:0.8)+'"/>';
+    }
+    s += '<line x1="3" y1="'+(base-cum*sc)+'" x2="97" y2="'+(base-cum*sc)+'" stroke="'+VOLT+'" stroke-width="0.6" stroke-dasharray="2.4 2"/>';
+    s += txt(3, base-cum*sc-3, 'NET +5R OVER 10 TRADES', {fill:VOLT, size:3.2});
+    s += txt(3, 92, 'LOSING IS BUILT IN — THE SAMPLE SIZE IS THE EDGE', {fill:DIM, size:3, ls:0.3});
+    return frame(s);
+  }
+
+  if (spec.kind === 'rule2'){
+    ['a','b'].forEach(function(k, n){
+      var r = spec[k], x = 4 + n*48;
+      s += '<rect x="'+x+'" y="22" width="44" height="56" fill="none" stroke="rgba(255,255,255,.28)" stroke-width="0.5"/>';
+      s += '<text x="'+(x+4)+'" y="40" fill="'+FAINT+'" font-size="16" font-weight="800" font-family="Helvetica Neue,Helvetica,Arial">'+r.n+'</text>';
+      s += txt(x+4, 52, r.label, {fill:INK, size:3.9, ls:0.2});
+      if (r.art === 'shield'){
+        s += '<path d="M'+(x+22)+' 58 l9 4 v7 c0 5 -4 8 -9 10 c-5 -2 -9 -5 -9 -10 v-7 z" fill="none" stroke="'+VOLT+'" stroke-width="0.7"/>';
+      } else {
+        s += '<circle cx="'+(x+22)+'" cy="68" r="9" fill="none" stroke="'+VOLT+'" stroke-width="0.7"/>';
+        s += '<path d="M'+(x+17)+' 68 q5 -5 10 0" fill="none" stroke="'+VOLT+'" stroke-width="0.6"/>';
+      }
+    });
+    return frame(s);
+  }
+
+  if (spec.kind === 'triangle'){
+    var A=[50,14], B=[12,84], C=[88,84];
+    s += '<path d="M'+A[0]+' '+A[1]+' L'+B[0]+' '+B[1]+' L'+C[0]+' '+C[1]+' Z" fill="none" stroke="'+INK+'" stroke-width="0.9" vector-effect="non-scaling-stroke"/>';
+    var labels = [[50,72,spec.sides[0]],[22,46,spec.sides[1]],[78,46,spec.sides[2]]];
+    labels.forEach(function(l,k){
+      s += txt(l[0], l[1], l[2], {fill: k===0?VOLT:INK, size:3.6, anchor:'middle'});
+    });
+    s += '<circle cx="50" cy="14" r="2" fill="'+VOLT+'"/><circle cx="12" cy="84" r="2" fill="'+VOLT+'"/><circle cx="88" cy="84" r="2" fill="'+VOLT+'"/>';
+    return frame(s);
+  }
+
+  if (spec.kind === 'killers'){
+    spec.items.forEach(function(it,k){
+      var y = 20 + k*24;
+      s += '<rect x="4" y="'+y+'" width="92" height="17" fill="none" stroke="rgba(255,75,62,.4)" stroke-width="0.5"/>';
+      s += '<line x1="4" y1="'+y+'" x2="96" y2="'+(y+17)+'" stroke="'+SELL+'" stroke-width="0.35" opacity="0.5"/>';
+      s += txt(10, y+11.6, it, {fill:SELL, size:5.2, ls:0.3});
+      s += txt(88, y+11.6, '×', {fill:SELL, size:5, anchor:'end'});
+    });
+    return frame(s);
+  }
+
+  if (spec.kind === 'checklist'){
+    spec.items.forEach(function(it,k){
+      var y = 12 + k*13.6;
+      s += '<rect x="4" y="'+(y-5.4)+'" width="4.6" height="4.6" fill="none" stroke="'+VOLT+'" stroke-width="0.55"/>';
+      s += '<path d="M'+(5.1)+' '+(y-3.2)+' l1.3 1.4 l2.2 -2.6" fill="none" stroke="'+VOLT+'" stroke-width="0.55"/>';
+      s += txt(12, y, it, {fill:INK, size:3.8, ls:0.28});
+      s += '<line x1="4" y1="'+(y+5.4)+'" x2="96" y2="'+(y+5.4)+'" stroke="'+FAINT+'" stroke-width="0.35"/>';
+    });
+    return frame(s);
+  }
+  return frame('');
+}
+
+function scale(pts, top, bottom){
+  /* remap a path's y range into [top,bottom] */
+  var ys = pts.map(function(p){return p[1];});
+  var lo = Math.min.apply(null,ys), hi = Math.max.apply(null,ys);
+  var rng = (hi-lo) || 1;
+  return pts.map(function(p,i){
+    return [4 + (i/(pts.length-1))*92, top + ((p[1]-lo)/rng)*(bottom-top)];
   });
 }
-/* Minimal formatting so the answer reads well: **bold**, *emphasis*, and ``` blocks. */
-function fmt(x){
-  var out = esc(x);
-  out = out.replace(/```([\s\S]*?)```/g, '<code style="display:block;background:#f4f4f2;border:1px solid #e4e4e2;border-radius:6px;padding:10px 12px;margin:10px 0;font-size:13.5px;white-space:pre-wrap">$1</code>');
-  out = out.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
-  out = out.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-  return out.replace(/\n/g, '<br>');
+function candSet(cs, yShift, k, withBand, mirror){
+  var s = '';
+  cs.forEach(function(c){
+    var o=c.o, h=c.h, l=c.l, cl=c.c;
+    var up = cl < o;                       /* y grows downward → lower y = higher price */
+    var col = up ? 'rgba(255,255,255,.92)' : 'rgba(255,255,255,.42)';
+    s += '<line x1="'+c.x+'" y1="'+h+'" x2="'+c.x+'" y2="'+l+'" stroke="'+col+'" stroke-width="0.5"/>';
+    var top = Math.min(o,cl), hh = Math.max(Math.abs(cl-o), 0.9);
+    s += '<rect x="'+(c.x-1.7)+'" y="'+top+'" width="3.4" height="'+hh+'" fill="'+(up?'none':col)+'" stroke="'+col+'" stroke-width="0.5"/>';
+  });
+  return s;
 }
+
+/* ====================================================================== shell */
+var P = { order: [], i: 0, shown: false, got: {}, filter: 'All' };
+var KEY = 'tc-visual-v1';
+try { var st = JSON.parse(localStorage.getItem(KEY) || '{}'); if (st && st.got) P.got = st.got; } catch (e) {}
+function save(){ try { localStorage.setItem(KEY, JSON.stringify({ got: P.got })); } catch (e) {} }
+
+var TAGS = ['All'];
+CARDS.forEach(function (c) { if (TAGS.indexOf(c.tag) < 0) TAGS.push(c.tag); });
+function deck(){ return CARDS.map(function(c,n){return n;}).filter(function(n){ return P.filter==='All' || CARDS[n].tag===P.filter; }); }
+function shuffled(){
+  P.order = deck();
+  for (var i = P.order.length-1; i>0; i--){ var j = Math.floor(Math.random()*(i+1)); var t=P.order[i]; P.order[i]=P.order[j]; P.order[j]=t; }
+  P.i = 0; P.shown = false; render();
+}
+function ordered(){ P.order = deck(); P.i = 0; P.shown = false; render(); }
+
+var $ = function(id){ return document.getElementById(id); };
+
 function render(){
-  var t = document.getElementById('tag'), pos = document.getElementById('pos');
-  var face = document.getElementById('face'), act = document.getElementById('act');
-  var doneEl = document.getElementById('done'), stage = document.getElementById('stage');
-  var cardEl = document.getElementById('card'), navEl = document.querySelector('.nav');
-  var hintEl = document.querySelector('.hint');
-
   var total = P.order.length;
-  var gotN = Object.keys(P.got).length;
-
-  document.getElementById('meter').textContent =
-    (total ? (P.i + 1) : 0) + ' / ' + total + '   ·   ' + gotN + ' marked';
-
-  if (!total){ t.textContent = '—'; pos.textContent = ''; face.innerHTML = '<p class="a">No cards in this topic.</p>';
-    act.style.display = 'none'; return; }
+  $('count').textContent = (total ? P.i+1 : 0) + ' / ' + total + '  ·  ' + Object.keys(P.got).length + ' MARKED';
+  $('rail').style.width = (total ? ((P.i+1)/total*100) : 0) + '%';
+  if (!total){ $('tag').textContent='—'; $('h1').textContent='No cards'; $('art').innerHTML=''; $('tip').textContent=''; $('act').style.display='none'; return; }
 
   var c = CARDS[P.order[P.i]];
-  t.textContent = c.t;
-  pos.textContent = 'card ' + (P.i + 1) + ' of ' + total + (P.got[P.order[P.i]] ? '  ·  marked' : '');
-
-  if (!P.flipped){
-    face.innerHTML = '<div class="ask">Question</div><div class="q">' + fmt(c.q) + '</div>' +
-      '<div class="flipnote">Click the card, or press space, to reveal.</div>';
-    act.style.display = 'none';
-    cardEl.setAttribute('aria-label', 'Question: ' + c.q);
-  } else {
-    face.innerHTML = '<div class="ask">Answer</div><div class="q" style="font-size:17px;font-weight:600;margin-bottom:14px">' +
-      fmt(c.q) + '</div><div class="rule"></div><p class="a">' + fmt(c.a) + '</p>';
-    act.style.display = 'flex';
-    cardEl.setAttribute('aria-label', 'Answer: ' + c.a);
-  }
-  doneEl.style.display = 'none'; stage.style.display = 'block';
-  navEl.style.display = P.flipped ? 'none' : 'flex';
-  hintEl.style.display = 'block';
+  $('tag').textContent = c.tag;
+  $('idx').textContent = 'CARD ' + (P.i+1) + ' / ' + total + (P.got[P.order[P.i]] ? '  ·  MARKED' : '');
+  $('h1').textContent = c.title;
+  $('art').innerHTML = draw(c.spec);
+  /* the tip is the reveal — hide it until asked, so the diagram leads */
+  $('tip').textContent = P.shown ? c.tip : '· · ·';
+  $('act').style.display = P.shown ? 'flex' : 'none';
+  var card = $('card'); card.classList.remove('flip'); void card.offsetWidth; card.classList.add('flip');
+  $('done').style.display='none'; card.style.display='';
+  document.querySelector('.nav').style.display='flex';
+  document.querySelector('.hint').style.display='block';
 }
-function next(){ if (P.i < P.order.length - 1){ P.i++; P.flipped = false; render(); } else finish(); }
-function prev(){ if (P.i > 0){ P.i--; P.flipped = false; render(); } }
-function flip(){ P.flipped = !P.flipped; render(); }
+function next(){ if (P.i < P.order.length-1){ P.i++; P.shown=false; render(); } else finish(); }
+function prev(){ if (P.i > 0){ P.i--; P.shown=false; render(); } }
+function reveal(){ P.shown = !P.shown; render(); }
 function grade(ok){
-  var key = P.order[P.i];
-  if (ok) P.got[key] = 1; else delete P.got[key];
+  var k = P.order[P.i];
+  if (ok) P.got[k]=1; else delete P.got[k];
   save();
-  if (P.i < P.order.length - 1) { P.i++; P.flipped = false; render(); } else finish();
+  if (P.i < P.order.length-1){ P.i++; P.shown=false; render(); } else finish();
 }
 function finish(){
-  var stage = document.getElementById('stage'), doneEl = document.getElementById('done');
-  var total = P.order.length;
-  var missed = P.order.filter(function (n) { return !P.got[n]; });
-  document.querySelector('.nav').style.display = 'none';
-  document.querySelector('.hint').style.display = 'none';
-  document.getElementById('card').style.display = 'none';
-  document.getElementById('act').style.display = 'none';
-  stage.style.display = 'block'; doneEl.style.display = 'block';
-  document.getElementById('doneStats').textContent =
-    (total - missed.length) + ' of ' + total + ' marked as known' +
+  var missed = P.order.filter(function(n){ return !P.got[n]; });
+  $('card').style.display='none'; $('act').style.display='none';
+  document.querySelector('.nav').style.display='none'; document.querySelector('.hint').style.display='none';
+  $('done').style.display='block';
+  $('doneStats').textContent = (P.order.length - missed.length) + ' of ' + P.order.length + ' marked as known' +
     (missed.length ? ' · ' + missed.length + ' to review.' : ' · nothing left to review.');
-  document.getElementById('againBtn').style.display = missed.length ? 'inline-block' : 'none';
+  $('againBtn').style.display = missed.length ? 'inline-block' : 'none';
+}
+function showAll(){
+  $('card').style.display=''; document.querySelector('.nav').style.display='flex';
+  document.querySelector('.hint').style.display='block'; $('done').style.display='none';
 }
 
-/* ---------------------------------------------------------------- wiring */
-document.getElementById('card').addEventListener('click', flip);
-document.getElementById('nextBtn').addEventListener('click', next);
-document.getElementById('prevBtn').addEventListener('click', prev);
-document.getElementById('gotBtn').addEventListener('click', function (e) { e.stopPropagation(); grade(true); });
-document.getElementById('missBtn').addEventListener('click', function (e) { e.stopPropagation(); grade(false); });
-document.getElementById('shuffleBtn').addEventListener('click', reshuffle);
-document.getElementById('resetBtn').addEventListener('click', function () {
-  P.got = {}; save(); showCard(); render();
-});
-document.getElementById('againBtn').addEventListener('click', function () {
-  var missed = P.order.filter(function (n) { return !P.got[n]; });
-  P.order = missed; P.i = 0; P.flipped = false; showCard(); render();
+$('card').addEventListener('click', reveal);
+$('nextBtn').addEventListener('click', next);
+$('prevBtn').addEventListener('click', prev);
+$('gotBtn').addEventListener('click', function(e){ e.stopPropagation(); grade(true); });
+$('missBtn').addEventListener('click', function(e){ e.stopPropagation(); grade(false); });
+$('shuffleBtn').addEventListener('click', shuffled);
+$('resetBtn').addEventListener('click', function(){ P.got={}; save(); showAll(); render(); });
+$('againBtn').addEventListener('click', function(){
+  P.order = P.order.filter(function(n){ return !P.got[n]; }); P.i=0; P.shown=false; showAll(); render();
 });
 
-function showCard(){
-  document.getElementById('card').style.display = '';
-  document.querySelector('.nav').style.display = 'flex';
-  document.querySelector('.hint').style.display = 'block';
-  document.getElementById('done').style.display = 'none';
-}
-
-/* topic chips */
-(function () {
-  var wrap = document.getElementById('chips');
-  TOPICS.forEach(function (tp) {
+(function(){
+  var w = $('chips');
+  TAGS.forEach(function(t){
     var b = document.createElement('button');
-    b.textContent = tp;
-    b.className = tp === 'All' ? 'on' : '';
-    b.addEventListener('click', function () {
-      P.filter = tp;
-      [].forEach.call(wrap.children, function (x) { x.className = ''; });
-      b.className = 'on';
-      showCard(); ordered();
+    b.textContent = t; if (t==='All') b.className='on';
+    b.addEventListener('click', function(){
+      P.filter=t; [].forEach.call(w.children, function(x){ x.className=''; }); b.className='on'; showAll(); ordered();
     });
-    wrap.appendChild(b);
+    w.appendChild(b);
   });
 })();
 
-document.addEventListener('keydown', function (e) {
-  if (e.metaKey || e.ctrlKey || e.altKey) return;
+document.addEventListener('keydown', function(e){
+  if (e.metaKey||e.ctrlKey||e.altKey) return;
   var k = e.key;
-  if (k === ' ' || k === 'Enter') { e.preventDefault(); flip(); }
-  else if (k === 'ArrowRight') { e.preventDefault(); next(); }
-  else if (k === 'ArrowLeft') { e.preventDefault(); prev(); }
-  else if (k === 'g' || k === 'G') { if (P.flipped) grade(true); }
-  else if (k === 'r' || k === 'R') { if (P.flipped) grade(false); }
-  else if (k === 's' || k === 'S') { reshuffle(); }
+  if (k===' '||k==='Enter'){ e.preventDefault(); reveal(); }
+  else if (k==='ArrowRight'){ e.preventDefault(); next(); }
+  else if (k==='ArrowLeft'){ e.preventDefault(); prev(); }
+  else if (k==='g'||k==='G'){ if (P.shown) grade(true); }
+  else if (k==='r'||k==='R'){ if (P.shown) grade(false); }
+  else if (k==='s'||k==='S'){ shuffled(); }
 });
 
 ordered();
